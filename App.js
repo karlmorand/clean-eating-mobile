@@ -7,6 +7,7 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, Button } from 'react-native';
 import Auth0 from 'react-native-auth0';
+import Login from './src/screens/Login';
 
 const auth0 = new Auth0({ domain: 'clean-eating.auth0.com', clientId: 'F4tg24oB2Xm6VsQ5eUhISkykK4S5T8xy' });
 
@@ -18,28 +19,35 @@ const instructions = Platform.select({
 export default class App extends Component<{}> {
 	constructor(props) {
 		super(props);
-		this.state = { accessToken: null };
+		this.state = { authUser: null };
 	}
 	showLogin = () => {
 		auth0.webAuth
 			.authorize({ scope: 'openid profile email', audience: 'https://clean-eating.auth0.com/userinfo' })
-			.then(
-				credentials => console.log(credentials)
-				// Successfully authenticated
-				// Store the accessToken
-			)
+			.then(authUser => {
+				console.log(authUser);
+				this.setState({
+					authUser
+				});
+			})
 			.catch(error => console.log(error));
 	};
 
 	render() {
+		console.ignoredYellowBox = ['Remote debugger'];
+		if (!this.state.authUser) {
+			return (
+				<View style={styles.container}>
+					<Login handlePress={this.showLogin} />
+				</View>
+			);
+		}
 		return (
 			<View style={styles.container}>
-				<Text style={styles.welcome}>Welcome to React Native!</Text>
-				<Text style={styles.instructions}>To get started, edit App.js</Text>
-				<Text style={styles.instructions}>{instructions}</Text>
-				<Button onPress={this.showLogin} title="Login" />
+				<Text>You're logged in</Text>
 			</View>
 		);
+		// return <Router user={this.state.authUser} logout={this.logout} />;
 	}
 }
 
@@ -48,7 +56,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#F5FCFF'
+		backgroundColor: '#F5FCFF',
+		paddingLeft: 5,
+		paddingRight: 5
 	},
 	welcome: {
 		fontSize: 20,
