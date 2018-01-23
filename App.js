@@ -21,11 +21,12 @@ export default class App extends Component<{}> {
 		this.state = { authUser: null, loggingIn: false };
 		// TODO: Use dev variable to figure out what api to use, update config file accordingly
 		if (__DEV__) {
-			console.log('Development');
+			this.apiURL = 'http://localhost:3000/api';
 		} else {
-			console.log('Production');
+			this.apiURL = 'https://clean-eating-web.herokuapp.com/api';
 		}
 	}
+
 	showLogin = () => {
 		auth0.webAuth
 			.authorize({ scope: 'openid profile', audience: 'https://cleaneatingapi.karlmorand.com' })
@@ -43,7 +44,7 @@ export default class App extends Component<{}> {
 	getMongoProfile = (userId, accessToken) => {
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		axios
-			.get(`${devApi}/user/${userId}`, { headers })
+			.get(`${this.apiURL}/user/${userId}`, { headers })
 			.then(res => {
 				this.setState({ authUser: res.data, loggingIn: false });
 			})
