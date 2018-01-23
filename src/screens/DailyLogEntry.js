@@ -9,8 +9,7 @@ import DailyJournal from '../components/DailyJournal';
 
 class DailyLogEntry extends Component {
 	state = {
-		text: '',
-		totalDailyPoints: 5
+		dailyEntry: null
 	};
 
 	handlePointsChange = change => {
@@ -20,6 +19,21 @@ class DailyLogEntry extends Component {
 			};
 		});
 	};
+	componentDidMount() {
+		//Hit the api to get today's dailyEntry
+		console.log('PROPS: ', this.props.screenProps.user);
+		// fetch(`http://localhost:4000/api/dailyentry/`, {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		Accept: 'application/json',
+		// 		'Content-Type': 'application/json'
+		// 	},
+		// 	body: JSON.stringify({
+		// 		firstParam: 'yourValue',
+		// 		secondParam: 'yourOtherValue'
+		// 	})
+		// });
+	}
 	render() {
 		return (
 			<View style={[containerStyle, styles.container]}>

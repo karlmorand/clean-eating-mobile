@@ -5,28 +5,51 @@
  */
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Button } from 'react-native';
+import { Platform, StyleSheet, Text, View, Button, ActivityIndicator } from 'react-native';
 import Auth0 from 'react-native-auth0';
 import Login from './src/screens/Login';
 import Router from './src/screens/Router';
+import LoadingSpinner from './src/components/LoadingSpinner/LoadingSpinner';
+import axios from 'axios';
+import { devApi } from './config';
 
 const auth0 = new Auth0({ domain: 'clean-eating.auth0.com', clientId: 'F4tg24oB2Xm6VsQ5eUhISkykK4S5T8xy' });
 
 export default class App extends Component<{}> {
 	constructor(props) {
 		super(props);
-		this.state = { authUser: null };
+		this.state = { authUser: null, loggingIn: false };
+		// TODO: Use dev variable to figure out what api to use, update config file accordingly
+		if (__DEV__) {
+			console.log('Development');
+		} else {
+			console.log('Production');
+		}
 	}
 	showLogin = () => {
 		auth0.webAuth
-			.authorize({ scope: 'openid profile email', audience: 'https://clean-eating.auth0.com/userinfo' })
+			.authorize({ scope: 'openid profile', audience: 'https://cleaneatingapi.karlmorand.com' })
 			.then(authUser => {
-				console.log(authUser);
-				this.setState({
-					authUser
+				this.setState({ loggingIn: true }, () => {
+					auth0.auth
+						.userInfo({ token: authUser.accessToken })
+						.then(res => this.getMongoProfile(res.sub, authUser.accessToken))
+						.catch(err => console.log(err));
 				});
 			})
 			.catch(error => console.log(error));
+	};
+
+	getMongoProfile = (userId, accessToken) => {
+		const headers = { Authorization: `Bearer ${accessToken}` };
+		axios
+			.get(`${devApi}/user/${userId}`, { headers })
+			.then(res => {
+				this.setState({ authUser: res.data, loggingIn: false });
+			})
+			.catch(err => {
+				console.log(err);
+			});
 	};
 
 	userLogout = () => {
@@ -44,10 +67,17 @@ export default class App extends Component<{}> {
 
 	render() {
 		console.ignoredYellowBox = ['Remote debugger'];
-		if (!this.state.authUser) {
+		if (!this.state.authUser && !this.state.loggingIn) {
 			return (
 				<View style={styles.container}>
 					<Login handlePress={this.showLogin} />
+				</View>
+			);
+		}
+		if (this.state.loggingIn) {
+			return (
+				<View style={styles.container}>
+					<ActivityIndicator size="large" color="#0000ff" />
 				</View>
 			);
 		}
