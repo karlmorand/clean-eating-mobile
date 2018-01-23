@@ -9,7 +9,6 @@ import { Platform, StyleSheet, Text, View, Button, ActivityIndicator } from 'rea
 import Auth0 from 'react-native-auth0';
 import Login from './src/screens/Login';
 import Router from './src/screens/Router';
-import LoadingSpinner from './src/components/LoadingSpinner/LoadingSpinner';
 import axios from 'axios';
 import { devApi } from './config';
 
