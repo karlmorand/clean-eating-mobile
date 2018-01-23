@@ -20,7 +20,7 @@ export default class App extends Component<{}> {
 		this.state = { authUser: null, loggingIn: false };
 		// TODO: Use dev variable to figure out what api to use, update config file accordingly
 		if (__DEV__) {
-			this.apiURL = 'http://localhost:3000/api';
+			this.apiURL = 'http://localhost:4000/api';
 		} else {
 			this.apiURL = 'https://clean-eating-web.herokuapp.com/api';
 		}
