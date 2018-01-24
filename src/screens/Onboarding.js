@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { containerStyle } from '../config';
 import { ButtonGroup } from 'react-native-elements';
 class Onboarding extends Component {
@@ -12,7 +12,7 @@ class Onboarding extends Component {
 	};
 
 	handleSubmit = () => {
-		console.log('SUBMIT');
+		this.props.onboardUser(this.state.challengeLevel);
 	};
 	render() {
 		return (
@@ -25,6 +25,7 @@ class Onboarding extends Component {
 					buttons={['Lifestyle', 'Jump Start', 'Performance']}
 					containerStyle={{ height: 30 }}
 				/>
+				<Button onPress={this.handleSubmit} title="Submit" />
 			</View>
 		);
 	}

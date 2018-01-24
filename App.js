@@ -70,15 +70,16 @@ export default class App extends Component<{}> {
 		const headers = { Authorization: `Bearer ${this.state.accessToken}` };
 		const data = { challengeLevel: challengeLevel };
 		axios
-			.post(`${this.apiURL}/user/${this.state.authUser}`, { data }, { headers })
-			.then(user => {
-				this.setState({ authUser: user });
+			.post(`${this.apiURL}/user/${this.state.authUser._id}/setup`, { data }, { headers })
+			.then(res => {
+				this.setState({ authUser: res.data });
 			})
 			.catch(err => console.log(err));
 	};
 
 	render() {
 		console.ignoredYellowBox = ['Remote debugger'];
+		console.log('authUser: ', this.state.authUser);
 		if (!this.state.authUser && !this.state.loggingIn) {
 			return (
 				<View style={styles.container}>
@@ -94,6 +95,7 @@ export default class App extends Component<{}> {
 			);
 		}
 		if (!this.state.authUser.onboardingComplete) {
+			console.log('Onboarding not complete');
 			return <Onboarding user={this.state.authUser} onboardUser={this.onboardUser} />;
 		}
 		return <Router user={this.state.authUser} logout={this.userLogout} />;
