@@ -9,6 +9,7 @@ import { Platform, StyleSheet, Text, View, Button, ActivityIndicator } from 'rea
 import Auth0 from 'react-native-auth0';
 import Login from './src/screens/Login';
 import Router from './src/screens/Router';
+import Onboarding from './src/screens/Onboarding';
 import axios from 'axios';
 import { devApi } from './config';
 
@@ -17,7 +18,7 @@ const auth0 = new Auth0({ domain: 'clean-eating.auth0.com', clientId: 'F4tg24oB2
 export default class App extends Component<{}> {
 	constructor(props) {
 		super(props);
-		this.state = { authUser: null, loggingIn: false };
+		this.state = { authUser: null, loggingIn: false, accessToken: null };
 		// TODO: Use dev variable to figure out what api to use, update config file accordingly
 		if (__DEV__) {
 			this.apiURL = 'http://localhost:4000/api';
@@ -45,7 +46,7 @@ export default class App extends Component<{}> {
 		axios
 			.get(`${this.apiURL}/user/${userId}`, { headers })
 			.then(res => {
-				this.setState({ authUser: res.data, loggingIn: false });
+				this.setState({ authUser: res.data, loggingIn: false, accessToken: accessToken });
 			})
 			.catch(err => {
 				console.log(err);
@@ -65,6 +66,17 @@ export default class App extends Component<{}> {
 		}
 	};
 
+	onboardUser = challengeLevel => {
+		const headers = { Authorization: `Bearer ${this.state.accessToken}` };
+		const data = { challengeLevel: challengeLevel };
+		axios
+			.post(`${this.apiURL}/user/${this.state.authUser}`, { data }, { headers })
+			.then(user => {
+				this.setState({ authUser: user });
+			})
+			.catch(err => console.log(err));
+	};
+
 	render() {
 		console.ignoredYellowBox = ['Remote debugger'];
 		if (!this.state.authUser && !this.state.loggingIn) {
@@ -80,6 +92,9 @@ export default class App extends Component<{}> {
 					<ActivityIndicator size="large" color="#0000ff" />
 				</View>
 			);
+		}
+		if (!this.state.authUser.onboardingComplete) {
+			return <Onboarding user={this.state.authUser} onboardUser={this.onboardUser} />;
 		}
 		return <Router user={this.state.authUser} logout={this.userLogout} />;
 	}
