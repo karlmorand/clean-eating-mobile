@@ -38,7 +38,7 @@ class DailyLogEntry extends Component {
 		axios
 			.post(`${this.apiUrl}/dailyentry/${this.state.dailyEntry._id}`, { updatedAnswer }, { headers })
 			.then(res => {
-				console.log(res);
+				this.setState({ dailyEntry: res.data });
 			})
 			.catch(err => console.log(err));
 	};
