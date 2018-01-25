@@ -22,13 +22,13 @@ class DailyYesNo extends Component {
 				<Text style={styles.description}>{this.props.description}</Text>
 				<View style={styles.buttonContainer}>
 					<TouchableOpacity
-						style={[styles.button, this.state.answer && styles.activeButton]}
+						style={[styles.button, this.state.answer && styles.activeButtonGood]}
 						onPress={this.handleYes}
 						disabled={this.props.disabled}>
 						<Text style={styles.buttonText}>Yes</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
-						style={[styles.button, !this.state.answer && styles.activeButton]}
+						style={[styles.button, !this.state.answer && styles.activeButtonBad]}
 						onPress={this.handleNo}
 						disabled={this.props.disabled}>
 						<Text style={styles.buttonText}>No</Text>
@@ -43,9 +43,9 @@ class DailyYesNo extends Component {
 const styles = StyleSheet.create({
 	container: {
 		width: '95%',
-		paddingTop: 5,
+		paddingTop: 3,
 		// flex: 1,
-		margin: 10,
+		margin: 7,
 		// backgroundColor: 'grey',
 		borderColor: 'grey'
 		// borderWidth: 1
@@ -60,15 +60,17 @@ const styles = StyleSheet.create({
 	button: {
 		flex: 1,
 		borderRadius: 20,
-		borderWidth: 1,
-		backgroundColor: '#e6e6e6',
+		backgroundColor: '#d2d2d2',
 		padding: 5,
 		margin: 5
 	},
-	activeButton: {
-		backgroundColor: 'grey'
+	activeButtonGood: {
+		backgroundColor: '#30a350'
 	},
-	buttonText: { textAlign: 'center', color: 'blue', fontSize: 30 },
+	activeButtonBad: {
+		backgroundColor: '#de2b31'
+	},
+	buttonText: { textAlign: 'center', color: 'white', fontSize: 30 },
 	title: {
 		textAlign: 'center',
 		fontSize: 30
