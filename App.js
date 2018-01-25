@@ -91,7 +91,7 @@ export default class App extends Component<{}> {
 		axios
 			.post(`${this.apiURL}/user/${this.state.authUser._id}/setup`, { data }, { headers })
 			.then(res => {
-				this.setState({ authUser: res.data });
+				this.setState({ mongoUser: res.data });
 			})
 			.catch(err => console.log(err));
 	};
@@ -113,7 +113,7 @@ export default class App extends Component<{}> {
 			);
 		}
 		if (!this.state.onboardingComplete) {
-			return <Onboarding user={this.state.authUser} onboardUser={this.onboardUser} />;
+			return <Onboarding onboardUser={this.onboardUser} />;
 		}
 		return <Router user={this.state.authUser} logout={this.userLogout} />;
 	}
