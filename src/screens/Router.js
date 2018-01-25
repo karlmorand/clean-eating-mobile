@@ -6,6 +6,7 @@ import { Icon } from 'react-native-elements';
 import SettingsScreen from './SettingsScreen';
 import DailyLogEntry from './DailyLogEntry';
 import Leaderboard from './Leaderboard';
+import History from './History';
 
 class Router extends Component {
 	render() {
@@ -22,6 +23,13 @@ class Router extends Component {
 				navigationOptions: {
 					tabBarLabel: 'Leaderboard',
 					tabBarIcon: ({ tintColor }) => <Icon name="show-chart" size={35} color={tintColor} />
+				}
+			},
+			History: {
+				screen: History,
+				navigationOptions: {
+					tabBarLabel: 'History',
+					tabBarIcon: ({ tintColor }) => <Icon name="history" size={35} color={tintColor} />
 				}
 			},
 			SettingsScreen: {
