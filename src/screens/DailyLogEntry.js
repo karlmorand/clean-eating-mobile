@@ -46,6 +46,7 @@ class DailyLogEntry extends Component {
 	};
 	_handleAppStateChange = () => {
 		console.log('DAILY ENTRY APP STATE CHANGE');
+		this.getDailyEntry();
 	};
 
 	componentDidMount() {
