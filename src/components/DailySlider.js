@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Slider } from 'react-native';
 
 class DailySlider extends Component {
 	state = {
-		value: this.props.value || 0,
+		value: Math.abs(this.props.value) || 0,
 		valueChange: 0
 	};
 
