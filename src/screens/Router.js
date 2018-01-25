@@ -32,7 +32,16 @@ class Router extends Component {
 				}
 			}
 		});
-		return <BasicApp screenProps={{ user: this.props.user, logout: this.props.logout }} />;
+		return (
+			<BasicApp
+				screenProps={{
+					user: this.props.user,
+					logout: this.props.logout,
+					mongoId: this.props.mongoId,
+					accessToken: this.props.accessToken
+				}}
+			/>
+		);
 	}
 }
 

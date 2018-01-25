@@ -3,16 +3,16 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 class DailyYesNo extends Component {
 	state = {
-		answer: this.props.answer || false
+		answer: this.props.answerStatus || false
 	};
 	handleYes = () => {
 		this.setState({ answer: true }, () => {
-			this.props.handlePointsChange(1);
+			this.props.handlePointsChange(this.props.questionId, this.props.maxDaily);
 		});
 	};
 	handleNo = () => {
 		this.setState({ answer: false }, () => {
-			this.props.handlePointsChange(-1);
+			this.props.handlePointsChange(this.props.questionId, 0);
 		});
 	};
 	render() {
