@@ -30,7 +30,7 @@ export default class App extends Component<{}> {
       loading: false,
       accessToken: null,
       mongoId: null,
-      mongoUser: null,
+      mongoUser: null, //TODO: probably don't need this, just need the mongoId
       authId: null
     };
     // TODO: Use dev variable to figure out what api to use, update config file accordingly
@@ -48,7 +48,8 @@ export default class App extends Component<{}> {
     const loggedInUser = await AsyncStorage.multiGet([
       "accessToken",
       "authId",
-      "onboardingComplete"
+      "onboardingComplete",
+      "mongoId"
     ]);
     //see if they have previous login info in AsyncStorage
     if (loggedInUser[0][1]) {
@@ -56,12 +57,22 @@ export default class App extends Component<{}> {
       this.setState({
         onboardingComplete: loggedInUser[2][1] === "true" ? true : false,
         authId: loggedInUser[1][1],
-        accessToken: loggedInUser[0][1]
+        accessToken: loggedInUser[0][1],
+        mongoId: loggedInUser[3][1]
       });
     }
   }
 
-  _handleAppStateChange = nextAppState => {};
+  _handleAppStateChange = async nextAppState => {
+    console.log("APP STATE CHANGE: ", nextAppState);
+    const loggedInUser = await AsyncStorage.multiGet([
+      "accessToken",
+      "authId",
+      "onboardingComplete"
+    ]);
+    console.log(loggedInUser);
+    console.log(this.state);
+  };
 
   showLogin = () => {
     // TODO: this looks gross, need to refactor at some point to better handle errors
@@ -84,6 +95,7 @@ export default class App extends Component<{}> {
   };
 
   getMongoProfile = (authId, accessToken) => {
+    console.log("Getting mongo profile");
     // TODO: Need better error handling on the AsyncStorage stuff, or just use Realm
     const headers = { Authorization: `Bearer ${accessToken}` };
     axios
@@ -92,10 +104,13 @@ export default class App extends Component<{}> {
         await AsyncStorage.multiSet([
           ["accessToken", accessToken],
           ["authId", authId],
-          ["onboardingComplete", "true"]
+          ["mongoId", res.data._id]
         ]);
         this.setState({
           mongoUser: res.data,
+          mongoId: res.data._id,
+          authId: res.data.authId,
+          onboardingComplete: res.data.onboardingComplete,
           loading: false,
           accessToken: accessToken
         });
@@ -106,18 +121,31 @@ export default class App extends Component<{}> {
   };
 
   userLogout = () => {
-    AsyncStorage.multiRemove(["accessToken", "authId"], () => {
-      if (Platform.OS === "android") {
-        this.setState({ accessToken: null, authId: null });
-      } else {
-        auth0.webAuth
-          .clearSession({})
-          .then(success => {
-            this.setState({ accessToken: null, authId: null });
-          })
-          .catch(error => console.log(error));
+    AsyncStorage.multiRemove(
+      ["accessToken", "authId", "onboardingComplete"],
+      () => {
+        if (Platform.OS === "android") {
+          this.setState({
+            accessToken: null,
+            authId: null,
+            mongoId: null,
+            mongoUser: null
+          });
+        } else {
+          auth0.webAuth
+            .clearSession({})
+            .then(success => {
+              this.setState({
+                accessToken: null,
+                authId: null,
+                mongoId: null,
+                mongoUser: null
+              });
+            })
+            .catch(error => console.log(error));
+        }
       }
-    });
+    );
   };
 
   onboardUser = challengeLevel => {
@@ -125,12 +153,16 @@ export default class App extends Component<{}> {
     const data = { challengeLevel: challengeLevel };
     axios
       .post(
-        `${this.apiURL}/user/${this.state.authUser._id}/setup`,
+        `${this.apiURL}/user/${this.state.mongoId}/setup`,
         { data },
         { headers }
       )
-      .then(res => {
-        this.setState({ mongoUser: res.data });
+      .then(async res => {
+        await AsyncStorage.setItem("onboardingComplete", "true");
+        this.setState({
+          mongoUser: res.data,
+          onboardingComplete: res.data.onboardingComplete
+        });
       })
       .catch(err => console.log(err));
   };
@@ -156,8 +188,10 @@ export default class App extends Component<{}> {
     }
     return (
       <Router
-        user={this.state.authUser}
+        user={this.state.mongoUser}
         authId={this.state.authId}
+        mongoId={this.state.mongoId}
+        accessToken={this.state.accessToken}
         logout={this.userLogout}
       />
     );
