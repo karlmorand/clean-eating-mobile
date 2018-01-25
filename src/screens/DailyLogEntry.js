@@ -13,7 +13,8 @@ import { prodApi, devApi } from '../../config.js';
 
 class DailyLogEntry extends Component {
 	state = {
-		dailyEntry: null
+		dailyEntry: null,
+		loadingTotal: false
 	};
 
 	apiUrl = __DEV__ ? devApi : prodApi;
@@ -34,13 +35,14 @@ class DailyLogEntry extends Component {
 		const { accessToken, mongoId } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		const updatedAnswer = { _id: questionId, newValue: newValue };
-		console.log('POINTS CHANGE: ', this.state.dailyEntry._id, headers);
-		axios
-			.post(`${this.apiUrl}/dailyentry/${this.state.dailyEntry._id}`, { updatedAnswer }, { headers })
-			.then(res => {
-				this.setState({ dailyEntry: res.data });
-			})
-			.catch(err => console.log(err));
+		this.setState({ loadingTotal: true }, () => {
+			axios
+				.post(`${this.apiUrl}/dailyentry/${this.state.dailyEntry._id}`, { updatedAnswer }, { headers })
+				.then(res => {
+					this.setState({ dailyEntry: res.data, loadingTotal: false });
+				})
+				.catch(err => console.log(err));
+		});
 	};
 	_handleAppStateChange = () => {
 		console.log('DAILY ENTRY APP STATE CHANGE');
@@ -53,18 +55,32 @@ class DailyLogEntry extends Component {
 		this.getDailyEntry();
 	}
 	buildEntryListItem = question => {
-		if (question.questionType === 'YESNO') {
-			return (
-				<DailyYesNo
-					title={question.questionTitle}
-					description={question.description}
-					answerStatus={question.currentValue ? true : false}
-					maxDaily={question.maxDailyPoints}
-					handlePointsChange={this.handlePointsChange}
-					questionId={question._id}
-					key={question._id}
-				/>
-			);
+		switch (question.questionType) {
+			case 'YESNO':
+				return (
+					<DailyYesNo
+						title={question.questionTitle}
+						description={question.description}
+						answerStatus={question.currentValue ? true : false}
+						maxDaily={question.maxDailyPoints}
+						handlePointsChange={this.handlePointsChange}
+						questionId={question._id}
+						key={question._id}
+					/>
+				);
+				break;
+			case 'SLIDER':
+				return (
+					<DailySlider
+						title={question.questionTitle}
+						value={question.currentValue}
+						handlePointsChange={this.handlePointsChange}
+						description={question.description}
+						maxDaily={question.maxDailyPoints}
+						questionId={question._id}
+						key={question._id}
+					/>
+				);
 		}
 	};
 	render() {
@@ -78,7 +94,13 @@ class DailyLogEntry extends Component {
 
 		return (
 			<View style={[containerStyle, styles.container]}>
-				<Text style={styles.title}>Today's points: {this.state.dailyEntry.entryTotal} </Text>
+				{this.state.loadingTotal ? (
+					<Text style={styles.title}>
+						Today's points: <ActivityIndicator size="small" color="#0000ff" style={styles.smallLoading} />
+					</Text>
+				) : (
+					<Text style={styles.title}>Today's points: {this.state.dailyEntry.entryTotal} </Text>
+				)}
 				<ScrollView>
 					{this.state.dailyEntry.entryQuestions.map(question => this.buildEntryListItem(question))}
 				</ScrollView>
@@ -113,6 +135,10 @@ const styles = StyleSheet.create({
 		backgroundColor: '#F5FCFF',
 		paddingLeft: 5,
 		paddingRight: 5
+	},
+	smallLoading: {
+		width: 10,
+		height: 24
 	}
 });
 
