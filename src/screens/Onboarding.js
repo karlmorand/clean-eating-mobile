@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { containerStyle } from '../config';
 import { ButtonGroup } from 'react-native-elements';
 class Onboarding extends Component {
 	state = {
-		challengeLevel: this.props.user.challengeLevel || 1
+		challengeLevel: 1
 	};
 
 	handleChange = challengeLevel => {
@@ -30,5 +30,13 @@ class Onboarding extends Component {
 		);
 	}
 }
+
+const styles = StyleSheet.create({
+	levelTitle: {
+		textAlign: 'center',
+		fontSize: 20,
+		fontWeight: 'bold'
+	}
+});
 
 export default Onboarding;

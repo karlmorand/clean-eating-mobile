@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Button, ActivityIndicator } from 'react-native';
+import { Platform, StyleSheet, Text, View, Button, ActivityIndicator, AsyncStorage } from 'react-native';
 import Auth0 from 'react-native-auth0';
 import Login from './src/screens/Login';
 import Router from './src/screens/Router';
@@ -18,7 +18,7 @@ const auth0 = new Auth0({ domain: 'clean-eating.auth0.com', clientId: 'F4tg24oB2
 export default class App extends Component<{}> {
 	constructor(props) {
 		super(props);
-		this.state = { authUser: null, loggingIn: false, accessToken: null };
+		this.state = { onboardingComplete: false, loggingIn: false, accessToken: null, mongoId: null, mongoUser: null };
 		// TODO: Use dev variable to figure out what api to use, update config file accordingly
 		if (__DEV__) {
 			this.apiURL = 'http://localhost:4000/api';
@@ -27,14 +27,29 @@ export default class App extends Component<{}> {
 		}
 	}
 
+	async componentDidMount() {
+		const loggedInUser = await AsyncStorage.multiGet(['accessToken', 'userId', 'onboardingComplete']);
+		if (loggedInUser) {
+			console.log('loggedInUser: ', loggedInUser);
+			this.setState({
+				onboardingComplete: loggedInUser[2][1] === 'true' ? true : false,
+				userId: loggedInUser[1][1],
+				accessToken: loggedInUser[0][1]
+			});
+		}
+	}
+
 	showLogin = () => {
+		// TODO: this looks gross, need to refactor at some point to better handle errors
 		auth0.webAuth
 			.authorize({ scope: 'openid profile', audience: 'https://cleaneatingapi.karlmorand.com' })
 			.then(authUser => {
 				this.setState({ loggingIn: true }, () => {
 					auth0.auth
 						.userInfo({ token: authUser.accessToken })
-						.then(res => this.getMongoProfile(res.sub, authUser.accessToken))
+						.then(res => {
+							this.getMongoProfile(res.sub, authUser.accessToken);
+						})
 						.catch(err => console.log(err));
 				});
 			})
@@ -42,11 +57,13 @@ export default class App extends Component<{}> {
 	};
 
 	getMongoProfile = (userId, accessToken) => {
+		// TODO: Need better error handling on the AsyncStorage stuff, or just use Realm
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		axios
 			.get(`${this.apiURL}/user/${userId}`, { headers })
-			.then(res => {
-				this.setState({ authUser: res.data, loggingIn: false, accessToken: accessToken });
+			.then(async res => {
+				await AsyncStorage.multiSet([['accessToken', accessToken], ['userId', userId], ['onboardingComplete', 'true']]);
+				this.setState({ mongoUser: res.data, loggingIn: false, accessToken: accessToken });
 			})
 			.catch(err => {
 				console.log(err);
@@ -54,16 +71,18 @@ export default class App extends Component<{}> {
 	};
 
 	userLogout = () => {
-		if (Platform.OS === 'android') {
-			this.setState({ authUser: null });
-		} else {
-			auth0.webAuth
-				.clearSession({})
-				.then(success => {
-					this.setState({ authUser: null });
-				})
-				.catch(error => console.log(error));
-		}
+		AsyncStorage.multiRemove(['accessToken', 'userId'], () => {
+			if (Platform.OS === 'android') {
+				this.setState({ accessToken: null, mongoId: null });
+			} else {
+				auth0.webAuth
+					.clearSession({})
+					.then(success => {
+						this.setState({ accessToken: null, mongoId: null });
+					})
+					.catch(error => console.log(error));
+			}
+		});
 	};
 
 	onboardUser = challengeLevel => {
@@ -79,8 +98,7 @@ export default class App extends Component<{}> {
 
 	render() {
 		console.ignoredYellowBox = ['Remote debugger'];
-		console.log('authUser: ', this.state.authUser);
-		if (!this.state.authUser && !this.state.loggingIn) {
+		if (!this.state.accessToken && !this.state.loggingIn) {
 			return (
 				<View style={styles.container}>
 					<Login handlePress={this.showLogin} />
@@ -94,8 +112,7 @@ export default class App extends Component<{}> {
 				</View>
 			);
 		}
-		if (!this.state.authUser.onboardingComplete) {
-			console.log('Onboarding not complete');
+		if (!this.state.onboardingComplete) {
 			return <Onboarding user={this.state.authUser} onboardUser={this.onboardUser} />;
 		}
 		return <Router user={this.state.authUser} logout={this.userLogout} />;
