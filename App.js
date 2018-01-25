@@ -6,7 +6,8 @@ import {
   View,
   Button,
   ActivityIndicator,
-  AsyncStorage
+  AsyncStorage,
+  AppState
 } from "react-native";
 import Auth0 from "react-native-auth0";
 import Login from "./src/screens/Login";
@@ -23,12 +24,14 @@ const auth0 = new Auth0({
 export default class App extends Component<{}> {
   constructor(props) {
     super(props);
+    console.log("CONSTRUCTOR: ", AppState.currentState);
     this.state = {
       onboardingComplete: false,
-      loggingIn: false,
+      loading: false,
       accessToken: null,
       mongoId: null,
-      mongoUser: null
+      mongoUser: null,
+      authId: null
     };
     // TODO: Use dev variable to figure out what api to use, update config file accordingly
     if (__DEV__) {
@@ -40,20 +43,25 @@ export default class App extends Component<{}> {
   }
 
   async componentDidMount() {
+    console.log("COMPONENT DID MOUNT");
+    AppState.addEventListener("change", this._handleAppStateChange);
     const loggedInUser = await AsyncStorage.multiGet([
       "accessToken",
-      "userId",
+      "authId",
       "onboardingComplete"
     ]);
-    if (loggedInUser) {
+    //see if they have previous login info in AsyncStorage
+    if (loggedInUser[0][1]) {
       console.log("loggedInUser: ", loggedInUser);
       this.setState({
         onboardingComplete: loggedInUser[2][1] === "true" ? true : false,
-        userId: loggedInUser[1][1],
+        authId: loggedInUser[1][1],
         accessToken: loggedInUser[0][1]
       });
     }
   }
+
+  _handleAppStateChange = nextAppState => {};
 
   showLogin = () => {
     // TODO: this looks gross, need to refactor at some point to better handle errors
@@ -63,7 +71,7 @@ export default class App extends Component<{}> {
         audience: "https://cleaneatingapi.karlmorand.com"
       })
       .then(authUser => {
-        this.setState({ loggingIn: true }, () => {
+        this.setState({ loading: true }, () => {
           auth0.auth
             .userInfo({ token: authUser.accessToken })
             .then(res => {
@@ -75,20 +83,20 @@ export default class App extends Component<{}> {
       .catch(error => console.log(error));
   };
 
-  getMongoProfile = (userId, accessToken) => {
+  getMongoProfile = (authId, accessToken) => {
     // TODO: Need better error handling on the AsyncStorage stuff, or just use Realm
     const headers = { Authorization: `Bearer ${accessToken}` };
     axios
-      .get(`${this.apiURL}/user/${userId}`, { headers })
+      .get(`${this.apiURL}/user/${authId}`, { headers })
       .then(async res => {
         await AsyncStorage.multiSet([
           ["accessToken", accessToken],
-          ["userId", userId],
+          ["authId", authId],
           ["onboardingComplete", "true"]
         ]);
         this.setState({
           mongoUser: res.data,
-          loggingIn: false,
+          loading: false,
           accessToken: accessToken
         });
       })
@@ -98,14 +106,14 @@ export default class App extends Component<{}> {
   };
 
   userLogout = () => {
-    AsyncStorage.multiRemove(["accessToken", "userId"], () => {
+    AsyncStorage.multiRemove(["accessToken", "authId"], () => {
       if (Platform.OS === "android") {
-        this.setState({ accessToken: null, mongoId: null });
+        this.setState({ accessToken: null, authId: null });
       } else {
         auth0.webAuth
           .clearSession({})
           .then(success => {
-            this.setState({ accessToken: null, mongoId: null });
+            this.setState({ accessToken: null, authId: null });
           })
           .catch(error => console.log(error));
       }
@@ -129,14 +137,14 @@ export default class App extends Component<{}> {
 
   render() {
     console.ignoredYellowBox = ["Remote debugger"];
-    if (!this.state.accessToken && !this.state.loggingIn) {
+    if (!this.state.accessToken && !this.state.loading) {
       return (
         <View style={styles.container}>
           <Login handlePress={this.showLogin} />
         </View>
       );
     }
-    if (this.state.loggingIn) {
+    if (this.state.loading) {
       return (
         <View style={styles.container}>
           <ActivityIndicator size="large" color="#0000ff" />
@@ -146,7 +154,13 @@ export default class App extends Component<{}> {
     if (!this.state.onboardingComplete) {
       return <Onboarding onboardUser={this.onboardUser} />;
     }
-    return <Router user={this.state.authUser} logout={this.userLogout} />;
+    return (
+      <Router
+        user={this.state.authUser}
+        authId={this.state.authId}
+        logout={this.userLogout}
+      />
+    );
   }
 }
 
