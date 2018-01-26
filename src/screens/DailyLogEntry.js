@@ -31,7 +31,10 @@ class DailyLogEntry extends Component {
 			.catch(err => console.log(err));
 	};
 
-	handlePointsChange = (questionId, newValue) => {
+	handlePointsChange = (questionId, newValue, addToTotal) => {
+		if (!addToTotal) {
+			newValue = -newValue;
+		}
 		const { accessToken, mongoId } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		const updatedAnswer = { _id: questionId, newValue: newValue };
