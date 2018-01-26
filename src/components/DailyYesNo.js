@@ -7,12 +7,12 @@ class DailyYesNo extends Component {
 	};
 	handleYes = () => {
 		this.setState({ answer: true }, () => {
-			this.props.handlePointsChange(this.props.questionId, this.props.maxDaily, this.props.question.addToValue);
+			this.props.handlePointsChange(this.props.questionId, this.props.maxDaily, this.props.addToTotal);
 		});
 	};
 	handleNo = () => {
 		this.setState({ answer: false }, () => {
-			this.props.handlePointsChange(this.props.questionId, 0);
+			this.props.handlePointsChange(this.props.questionId, 0, this.props.addToTotal);
 		});
 	};
 	render() {

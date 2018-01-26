@@ -32,12 +32,15 @@ class DailyLogEntry extends Component {
 	};
 
 	handlePointsChange = (questionId, newValue, addToTotal) => {
+		console.log('addToTotal: ', addToTotal, newValue);
 		if (!addToTotal) {
 			newValue = -newValue;
 		}
+		console.log('NEW VALUE: ', newValue);
 		const { accessToken, mongoId } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		const updatedAnswer = { _id: questionId, newValue: newValue };
+		console.log('UPDATED ANSWER: ', updatedAnswer);
 		this.setState({ loadingTotal: true }, () => {
 			axios
 				.post(`${this.apiUrl}/dailyentry/${this.state.dailyEntry._id}`, { updatedAnswer }, { headers })
@@ -69,6 +72,7 @@ class DailyLogEntry extends Component {
 						maxDaily={question.maxDailyPoints}
 						handlePointsChange={this.handlePointsChange}
 						questionId={question._id}
+						addToTotal={question.addToTotal}
 						key={question._id}
 					/>
 				);
@@ -82,6 +86,7 @@ class DailyLogEntry extends Component {
 						description={question.description}
 						maxDaily={question.maxDailyPoints}
 						questionId={question._id}
+						addToTotal={question.addToTotal}
 						key={question._id}
 					/>
 				);

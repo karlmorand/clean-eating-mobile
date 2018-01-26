@@ -83,6 +83,7 @@ export default class App extends Component<{}> {
 		axios
 			.get(`${this.apiURL}/user/${authId}`, { headers })
 			.then(async res => {
+				console.log(res.data);
 				await AsyncStorage.multiSet([['accessToken', accessToken], ['authId', authId], ['mongoId', res.data._id]]);
 				this.setState({
 					mongoUser: res.data,

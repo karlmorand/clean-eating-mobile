@@ -9,7 +9,7 @@ class DailySlider extends Component {
 
 	handleChange = newValue => {
 		this.setState({ value: newValue }, () => {
-			this.props.handlePointsChange(this.props.questionId, this.state.value, this.props.question.addToValue);
+			this.props.handlePointsChange(this.props.questionId, this.state.value, this.props.addToTotal);
 		});
 	};
 
