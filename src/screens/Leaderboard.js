@@ -31,6 +31,9 @@ class Leaderboard extends Component {
 		axios
 			.get(`${this.apiURL}/leaderboard/${user.gym}`, { headers })
 			.then(res => {
+				res.data.sort((a, b) => {
+					return b.total - a.total;
+				});
 				this.setState({ leaderboard: res.data });
 			})
 			.catch(err => {
