@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, TextInput, View, Picker, ScrollView, AppState, ActivityIndicator } from 'react-native';
 import { containerStyle } from '../config';
+import isSameDay from 'date-fns/is_same_day';
 import DailyYesNo from '../components/DailyYesNo';
 import DailySlider from '../components/DailySlider';
 import DailyJournal from '../components/DailyJournal';
@@ -23,8 +24,10 @@ class DailyLogEntry extends Component {
 		console.log('GETTING DAILY ENTRY');
 		const { accessToken, mongoId } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
+		const entryDate = this.props.date || Date.now();
+		console.log(entryDate);
 		axios
-			.get(`${this.apiUrl}/dailyentry/${mongoId}`, { headers })
+			.get(`${this.apiUrl}/dailyentry/${mongoId}/${entryDate}`, { headers })
 			.then(res => {
 				this.setState({ dailyEntry: res.data });
 			})
@@ -52,7 +55,11 @@ class DailyLogEntry extends Component {
 	};
 	_handleAppStateChange = () => {
 		console.log('DAILY ENTRY APP STATE CHANGE');
-		this.getDailyEntry();
+		const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
+		if (!sameDay && AppState.currentState === 'active') {
+			console.log('Updating daily entry');
+			this.getDailyEntry();
+		}
 	};
 
 	componentDidMount() {

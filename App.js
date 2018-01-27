@@ -73,6 +73,7 @@ export default class App extends Component<{}> {
 						.catch(err => console.log(err));
 				});
 			})
+			// TODO: Handle this error
 			.catch(error => console.log(error));
 	};
 
