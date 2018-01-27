@@ -35,15 +35,12 @@ class DailyLogEntry extends Component {
 	};
 
 	handlePointsChange = (questionId, newValue, addToTotal) => {
-		console.log('addToTotal: ', addToTotal, newValue);
 		if (!addToTotal) {
 			newValue = -newValue;
 		}
-		console.log('NEW VALUE: ', newValue);
 		const { accessToken, mongoId } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		const updatedAnswer = { _id: questionId, newValue: newValue };
-		console.log('UPDATED ANSWER: ', updatedAnswer);
 		this.setState({ loadingTotal: true }, () => {
 			axios
 				.post(`${this.apiUrl}/dailyentry/${this.state.dailyEntry._id}`, { updatedAnswer }, { headers })
@@ -57,7 +54,7 @@ class DailyLogEntry extends Component {
 		console.log('APP STATE CHANGE in DAILY ENTRY ');
 		const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
 		if (!sameDay && AppState.currentState === 'active') {
-			console.log('Updating daily entry');
+			console.log('Updating daily entry becuase it was stale');
 			this.getDailyEntry();
 		}
 	};
