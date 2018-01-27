@@ -54,7 +54,7 @@ class DailyLogEntry extends Component {
 		});
 	};
 	_handleAppStateChange = () => {
-		console.log('DAILY ENTRY APP STATE CHANGE');
+		console.log('APP STATE CHANGE in DAILY ENTRY ');
 		const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
 		if (!sameDay && AppState.currentState === 'active') {
 			console.log('Updating daily entry');
