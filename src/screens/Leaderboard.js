@@ -11,7 +11,8 @@ class Leaderboard extends Component {
 		super(props);
 		console.log('LEADERBOARD: ', this.props.screenProps);
 		this.state = {
-			leaderboard: []
+			leaderboard: [],
+			refreshing: false
 		};
 		if (__DEV__) {
 			this.apiURL = devApi;
@@ -21,6 +22,10 @@ class Leaderboard extends Component {
 	}
 
 	componentDidMount() {
+		this.getCurrentLeaderboard();
+	}
+
+	getCurrentLeaderboard = () => {
 		const { accessToken, user } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		if (!user) {
@@ -33,12 +38,13 @@ class Leaderboard extends Component {
 				res.data.sort((a, b) => {
 					return b.total - a.total;
 				});
-				this.setState({ leaderboard: res.data });
+				this.setState({ leaderboard: res.data, refreshing: false });
 			})
 			.catch(err => {
+				this.setState({ refreshing: false });
 				console.log(err);
 			});
-	}
+	};
 	renderItem = ({ item }) => {
 		return (
 			<ListItem
@@ -49,7 +55,20 @@ class Leaderboard extends Component {
 			/>
 		);
 	};
+
+	handleRefresh = () => {
+		this.setState(
+			{
+				refreshing: true
+			},
+			() => {
+				this.getCurrentLeaderboard();
+			}
+		);
+	};
+
 	_keyExtractor = (item, index) => item.id;
+
 	render() {
 		console.log('LEADERBOARD DATA: ', this.state.leaderboard);
 		if (!this.state.leaderboard.length) {
@@ -62,7 +81,13 @@ class Leaderboard extends Component {
 		return (
 			<View style={containerStyle}>
 				<Text style={styles.title}>Leaderboard</Text>
-				<FlatList data={this.state.leaderboard} keyExtractor={this._keyExtractor} renderItem={this.renderItem} />
+				<FlatList
+					data={this.state.leaderboard}
+					keyExtractor={this._keyExtractor}
+					renderItem={this.renderItem}
+					refreshing={this.state.refreshing}
+					onRefresh={this.handleRefresh}
+				/>
 			</View>
 		);
 	}
