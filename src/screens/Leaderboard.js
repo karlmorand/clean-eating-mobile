@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import { containerStyle } from '../config';
-import LeaderboardItem from '../components/LeaderboardItem';
 import axios from 'axios';
 
 import { prodApi, devApi } from '../../config.js';
@@ -40,7 +39,17 @@ class Leaderboard extends Component {
 				console.log(err);
 			});
 	}
-	renderItem = ({ item }) => <LeaderboardItem key={item.id} score={item.total} name={item.name} />;
+	renderItem = ({ item }) => {
+		return (
+			<ListItem
+				title={item.name}
+				titleStyle={styles.itemTitle}
+				badge={{ value: item.total, containerStyle: styles.badgeContainer, textStyle: styles.badgeText }}
+				hideChevron={true}
+			/>
+		);
+	};
+	_keyExtractor = (item, index) => item.id;
 	render() {
 		console.log('LEADERBOARD DATA: ', this.state.leaderboard);
 		if (!this.state.leaderboard.length) {
@@ -53,19 +62,7 @@ class Leaderboard extends Component {
 		return (
 			<View style={containerStyle}>
 				<Text style={styles.title}>Leaderboard</Text>
-				<List containerStyle={{ margin: 20 }}>
-					{this.state.leaderboard.map(entry => {
-						return (
-							<ListItem
-								title={entry.name}
-								titleStyle={styles.itemTitle}
-								key={entry.id}
-								badge={{ value: entry.total, containerStyle: styles.badgeContainer, textStyle: styles.badgeText }}
-								hideChevron={true}
-							/>
-						);
-					})}
-				</List>
+				<FlatList data={this.state.leaderboard} keyExtractor={this._keyExtractor} renderItem={this.renderItem} />
 			</View>
 		);
 	}
