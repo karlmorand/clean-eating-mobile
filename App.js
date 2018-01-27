@@ -38,20 +38,21 @@ export default class App extends Component<{}> {
 		AppState.addEventListener('change', this._handleAppStateChange);
 		const loggedInUser = await AsyncStorage.multiGet(['accessToken', 'authId', 'onboardingComplete', 'mongoId']);
 		//see if they have previous login info in AsyncStorage
-		if (loggedInUser[0][1]) {
-			console.log('loggedInUser: ', loggedInUser, loggedInUser[2][1] === 'true');
-			this.setState({
-				onboardingComplete: loggedInUser[2][1] === 'true' ? true : false,
-				authId: loggedInUser[1][1],
-				accessToken: loggedInUser[0][1],
-				mongoId: loggedInUser[3][1]
-			});
-		}
+		// if (loggedInUser[0][1]) {
+		// 	console.log('loggedInUser: ', loggedInUser, loggedInUser[2][1] === 'true');
+		// 	this.setState({
+		// 		onboardingComplete: loggedInUser[2][1] === 'true' ? true : false,
+		// 		authId: loggedInUser[1][1],
+		// 		accessToken: loggedInUser[0][1],
+		// 		mongoId: loggedInUser[3][1]
+		// 	});
+		// }
+		this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
 	}
 
 	_handleAppStateChange = async nextAppState => {
 		console.log('APP STATE CHANGE: ', nextAppState);
-		const loggedInUser = await AsyncStorage.multiGet(['accessToken', 'authId', 'onboardingComplete']);
+		const loggedInUser = await AsyncStorage.multiGet(['accessToken', 'authId', 'onboardingComplete', 'mongoId']);
 		console.log(loggedInUser);
 		console.log(this.state);
 	};
