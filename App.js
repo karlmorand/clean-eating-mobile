@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Button, ActivityIndicator, AsyncStorage, AppState } from 'react-native';
+import {
+	Platform,
+	StyleSheet,
+	Text,
+	View,
+	Button,
+	ActivityIndicator,
+	AsyncStorage,
+	AppState,
+	SafeAreaView
+} from 'react-native';
 import Auth0 from 'react-native-auth0';
 import Login from './src/screens/Login';
 import Router from './src/screens/Router';
@@ -145,20 +155,28 @@ export default class App extends Component<{}> {
 		console.ignoredYellowBox = ['Remote debugger'];
 		if (!this.state.accessToken && !this.state.loading) {
 			return (
-				<View style={styles.container}>
-					<Login handlePress={this.showLogin} />
-				</View>
+				<SafeAreaView style={styles.safeArea}>
+					<View style={styles.container}>
+						<Login handlePress={this.showLogin} />
+					</View>
+				</SafeAreaView>
 			);
 		}
 		if (this.state.loading) {
 			return (
-				<View style={styles.container}>
-					<ActivityIndicator size="large" color="#0000ff" />
-				</View>
+				<SafeAreaView style={styles.safeArea}>
+					<View style={styles.container}>
+						<ActivityIndicator size="large" color="#0000ff" />
+					</View>
+				</SafeAreaView>
 			);
 		}
 		if (!this.state.onboardingComplete) {
-			return <Onboarding onboardUser={this.onboardUser} />;
+			return (
+				<SafeAreaView style={styles.safeArea}>
+					<Onboarding onboardUser={this.onboardUser} />
+				</SafeAreaView>
+			);
 		}
 		return (
 			<Router
@@ -190,5 +208,8 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		color: '#333333',
 		marginBottom: 5
+	},
+	safeArea: {
+		flex: 1
 	}
 });
