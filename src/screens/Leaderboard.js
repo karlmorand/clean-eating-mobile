@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { List, ListItem } from 'react-native-elements';
+import { ListItem } from 'react-native-elements';
 import { containerStyle } from '../config';
 import axios from 'axios';
 
