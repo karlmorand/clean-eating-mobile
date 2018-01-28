@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, AppState } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { containerStyle } from '../config';
 import { prodApi, devApi } from '../../config.js';
@@ -23,7 +23,15 @@ class History extends Component {
 	}
 	componentDidMount() {
 		this.getDailyEntryHistory();
+		AppState.addEventListener('change', this._handleAppStateChange);
 	}
+
+	_handleAppStateChange = () => {
+		if (AppState.currentState === 'active') {
+			console.log('APP STATE CHANGE in HISTORY ');
+			this.getDailyEntryHistory();
+		}
+	};
 
 	getDailyEntryHistory = () => {
 		const { accessToken, user } = this.props.screenProps;

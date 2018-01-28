@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, AppState } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { containerStyle } from '../config';
 import axios from 'axios';
@@ -22,8 +22,16 @@ class Leaderboard extends Component {
 	}
 
 	componentDidMount() {
+		AppState.addEventListener('change', this._handleAppStateChange);
 		this.getCurrentLeaderboard();
 	}
+
+	_handleAppStateChange = () => {
+		if (AppState.currentState === 'active') {
+			console.log('APP STATE CHANGE in Leaderboard ');
+			this.getCurrentLeaderboard();
+		}
+	};
 
 	getCurrentLeaderboard = () => {
 		const { accessToken, user } = this.props.screenProps;
