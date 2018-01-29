@@ -107,13 +107,15 @@ class DailyLogEntry extends Component {
 
 		return (
 			<View style={[containerStyle, styles.container]}>
-				{this.state.loadingTotal ? (
-					<Text style={styles.title}>
-						Today's points: <ActivityIndicator size="small" color="#0000ff" style={styles.smallLoading} />
-					</Text>
-				) : (
-					<Text style={styles.title}>Today's points: {this.state.dailyEntry.entryTotal} </Text>
-				)}
+				<View style={styles.titleContainer}>
+					{this.state.loadingTotal ? (
+						<Text style={styles.title}>
+							Today's points: <ActivityIndicator size="large" color="white" style={styles.smallLoading} />
+						</Text>
+					) : (
+						<Text style={styles.title}>Today's points: {this.state.dailyEntry.entryTotal} </Text>
+					)}
+				</View>
 				<ScrollView>
 					{this.state.dailyEntry.entryQuestions.map(question => this.buildEntryListItem(question))}
 				</ScrollView>
@@ -139,7 +141,17 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		textAlign: 'center',
-		fontSize: 20
+		fontSize: 23,
+		color: 'white'
+	},
+	titleContainer: {
+		marginTop: 15,
+		padding: 10,
+		backgroundColor: 'green',
+		borderRadius: 15,
+		height: '10%',
+		alignItems: 'center',
+		justifyContent: 'center'
 	},
 	loading: {
 		flex: 1,
@@ -150,8 +162,9 @@ const styles = StyleSheet.create({
 		paddingRight: 5
 	},
 	smallLoading: {
-		width: 10,
-		height: 24
+		width: 20,
+		height: 28,
+		marginLeft: 5
 	}
 });
 

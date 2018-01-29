@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, StyleSheet, AppState } from 'react-native';
+import { View, Text, FlatList, StyleSheet, AppState, ActivityIndicator } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { containerStyle } from '../config';
 import { prodApi, devApi } from '../../config.js';
@@ -81,7 +81,8 @@ class History extends Component {
 	render() {
 		if (!this.state.dailyEntries.length) {
 			<View style={containerStyle}>
-				<Text>Error showing history...please log out and log back in</Text>
+				<ActivityIndicator size="large" color="#0000ff" />
+				<Text style={styles.title}>Loading History</Text>
 			</View>;
 		}
 		return (

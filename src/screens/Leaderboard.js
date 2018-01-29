@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList, AppState } from 'react-native';
+import { View, Text, StyleSheet, FlatList, AppState, ActivityIndicator } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { containerStyle } from '../config';
 import axios from 'axios';
@@ -82,7 +82,8 @@ class Leaderboard extends Component {
 		if (!this.state.leaderboard.length) {
 			return (
 				<View style={containerStyle}>
-					<Text>Error showing leaderboard...please log out and log back in</Text>
+					<Text style={styles.title}>Loading Leaderboard</Text>
+					<ActivityIndicator size="large" color="#0000ff" />
 				</View>
 			);
 		}
