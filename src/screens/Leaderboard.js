@@ -56,7 +56,9 @@ class Leaderboard extends Component {
 	renderItem = ({ item }) => {
 		return (
 			<ListItem
+				roundAvatar
 				title={item.name}
+				avatar={item.picture}
 				titleStyle={styles.itemTitle}
 				badge={{ value: item.total, containerStyle: styles.badgeContainer, textStyle: styles.badgeText }}
 				hideChevron={true}
@@ -96,6 +98,7 @@ class Leaderboard extends Component {
 					renderItem={this.renderItem}
 					refreshing={this.state.refreshing}
 					onRefresh={this.handleRefresh}
+					style={styles.list}
 				/>
 			</View>
 		);
@@ -118,6 +121,10 @@ const styles = StyleSheet.create({
 		color: 'black',
 		fontSize: 20,
 		fontWeight: 'bold'
+	},
+	list: {
+		paddingLeft: 10,
+		paddingRight: 10
 	}
 });
 
