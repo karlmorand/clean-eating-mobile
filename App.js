@@ -8,7 +8,9 @@ import {
 	ActivityIndicator,
 	AsyncStorage,
 	AppState,
-	SafeAreaView
+	SafeAreaView,
+	NetInfo,
+	Alert
 } from 'react-native';
 import Auth0 from 'react-native-auth0';
 import Login from './src/screens/Login';
@@ -46,12 +48,24 @@ export default class App extends Component<{}> {
 	async componentDidMount() {
 		console.log('COMPONENT DID MOUNT');
 		AppState.addEventListener('change', this._handleAppStateChange);
+		NetInfo.addEventListener('connectionChange', this.handleConnectionChange);
 		const loggedInUser = await AsyncStorage.multiGet(['accessToken', 'authId', 'onboardingComplete', 'mongoId']);
 		if (loggedInUser[0][1]) {
 			console.log('loggedInUser: ', loggedInUser, loggedInUser[2][1] === 'true');
 			this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
 		}
 	}
+
+	handleConnectionChange = async connectionInfo => {
+		if (connectionInfo.type === 'none' || connectionInfo.type === 'unknown') {
+			Alert.alert(
+				"You're Offline",
+				'You appear to be offline, please re-connect to use the app',
+				[{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+				{ cancelable: false }
+			);
+		}
+	};
 
 	_handleAppStateChange = async nextAppState => {
 		console.log('APP STATE CHANGE: ', nextAppState);

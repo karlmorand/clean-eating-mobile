@@ -53,12 +53,16 @@ class DailyLogEntry extends Component {
 	};
 	_handleAppStateChange = () => {
 		console.log('APP STATE CHANGE in DAILY ENTRY ');
-		const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
-		if (!sameDay && AppState.currentState === 'active') {
-			this.setState({ loadingEntry: true }, () => {
-				console.log('Updating daily entry becuase it was stale');
-				this.getDailyEntry();
-			});
+		if (!this.state.dailyEntry) {
+			this.getDailyEntry();
+		} else {
+			const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
+			if (!sameDay && AppState.currentState === 'active') {
+				this.setState({ loadingEntry: true }, () => {
+					console.log('Updating daily entry becuase it was stale');
+					this.getDailyEntry();
+				});
+			}
 		}
 	};
 
