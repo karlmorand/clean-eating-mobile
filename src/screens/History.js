@@ -56,8 +56,9 @@ class History extends Component {
 			});
 	};
 
-	handlePress = press => {
-		console.log('History item pressed: ', press);
+	handlePress = entry => {
+		const { navigation } = this.props;
+		navigation.navigate('DailyLogEntry', { entryId: entry._id });
 	};
 
 	renderItem = ({ item }) => {
@@ -70,7 +71,7 @@ class History extends Component {
 				badge={{ value: item.entryTotal, containerStyle: styles.badgeContainer, textStyle: styles.badgeText }}
 				hideChevron={true}
 				onPress={() => {
-					this.handlePress(item_id);
+					this.handlePress(item);
 				}}
 			/>
 		);
@@ -95,7 +96,6 @@ class History extends Component {
 		}
 		return (
 			<View style={containerStyle}>
-				<Text style={styles.title}>History</Text>
 				<FlatList
 					data={this.state.dailyEntries}
 					keyExtractor={item => item._id}

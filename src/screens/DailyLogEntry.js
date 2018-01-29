@@ -66,11 +66,30 @@ class DailyLogEntry extends Component {
 		}
 	};
 
+	getExistingEntry = entryId => {
+		// TODO: Definetly need to refactor this and the getDailyEntry function
+		const { accessToken, mongoId } = this.props.screenProps;
+		const headers = { Authorization: `Bearer ${accessToken}` };
+		axios
+			.get(`${this.apiUrl}/dailyentry/existing/${entryId}`, { headers })
+			.then(res => {
+				this.setState({ dailyEntry: res.data, loadingEntry: false });
+			})
+			.catch(err => console.log(err));
+	};
+
 	componentDidMount() {
 		//Hit the api to get today's dailyEntry
 		console.log('DAILY ENTRY DID MOUNT');
-		AppState.addEventListener('change', this._handleAppStateChange);
-		this.getDailyEntry();
+		console.log(this.props.navigation);
+		if (this.props.navigation.state.params && this.props.navigation.state.params) {
+			this.setState({ loadingEntry: true }, () => {
+				this.getExistingEntry(this.props.navigation.state.params.entryId);
+			});
+		} else {
+			AppState.addEventListener('change', this._handleAppStateChange);
+			this.getDailyEntry();
+		}
 	}
 	buildEntryListItem = question => {
 		switch (question.questionType) {
