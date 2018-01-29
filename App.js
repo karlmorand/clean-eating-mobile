@@ -60,7 +60,7 @@ export default class App extends Component<{}> {
 		if (connectionInfo.type === 'none' || connectionInfo.type === 'unknown') {
 			Alert.alert(
 				"You're Offline",
-				'You appear to be offline, please re-connect to use the app',
+				'Please re-connect to update your daily entry, ',
 				[{ text: 'OK', onPress: () => console.log('OK Pressed') }],
 				{ cancelable: false }
 			);
