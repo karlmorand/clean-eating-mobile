@@ -49,8 +49,7 @@ const styles = StyleSheet.create({
 	},
 	sliderContainer: {
 		flexDirection: 'row',
-		marginTop: 15,
-		marginBottom: 15
+		marginTop: 15
 	},
 
 	activeButton: {

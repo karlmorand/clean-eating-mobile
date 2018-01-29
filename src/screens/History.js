@@ -56,14 +56,22 @@ class History extends Component {
 			});
 	};
 
+	handlePress = press => {
+		console.log('History item pressed: ', press);
+	};
+
 	renderItem = ({ item }) => {
 		const date = moment(item.date).format('ddd MMM Do');
 		return (
 			<ListItem
 				title={date}
 				titleStyle={styles.itemTitle}
+				containerStyle={styles.listItem}
 				badge={{ value: item.entryTotal, containerStyle: styles.badgeContainer, textStyle: styles.badgeText }}
 				hideChevron={true}
+				onPress={() => {
+					this.handlePress(item_id);
+				}}
 			/>
 		);
 	};
@@ -94,6 +102,7 @@ class History extends Component {
 					renderItem={this.renderItem}
 					refreshing={this.state.refreshing}
 					onRefresh={this.handleRefresh}
+					style={styles.list}
 				/>
 			</View>
 		);
@@ -116,6 +125,13 @@ const styles = StyleSheet.create({
 		color: 'black',
 		fontSize: 20,
 		fontWeight: 'bold'
+	},
+	list: {
+		marginLeft: 15,
+		marginRight: 15
+	},
+	listItem: {
+		borderBottomWidth: 0
 	}
 });
 

@@ -58,8 +58,7 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'space-around',
-		marginTop: 15,
-		marginBottom: 15
+		marginTop: 10
 	},
 	button: {
 		flex: 1,

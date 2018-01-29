@@ -60,6 +60,7 @@ class Leaderboard extends Component {
 				title={item.name}
 				avatar={item.picture}
 				titleStyle={styles.itemTitle}
+				containerStyle={styles.listItem}
 				badge={{ value: item.total, containerStyle: styles.badgeContainer, textStyle: styles.badgeText }}
 				hideChevron={true}
 			/>
@@ -123,8 +124,11 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold'
 	},
 	list: {
-		paddingLeft: 10,
-		paddingRight: 10
+		paddingLeft: 15,
+		paddingRight: 15
+	},
+	listItem: {
+		borderBottomWidth: 0
 	}
 });
 
