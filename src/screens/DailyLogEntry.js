@@ -15,7 +15,8 @@ import { prodApi, devApi } from '../../config.js';
 class DailyLogEntry extends Component {
 	state = {
 		dailyEntry: null,
-		loadingTotal: false
+		loadingTotal: false,
+		loadingEntry: true
 	};
 
 	apiUrl = __DEV__ ? devApi : prodApi;
@@ -29,7 +30,7 @@ class DailyLogEntry extends Component {
 		axios
 			.get(`${this.apiUrl}/dailyentry/${mongoId}/${entryDate}`, { headers })
 			.then(res => {
-				this.setState({ dailyEntry: res.data });
+				this.setState({ dailyEntry: res.data, loadingEntry: false });
 			})
 			.catch(err => console.log(err));
 	};
@@ -54,8 +55,10 @@ class DailyLogEntry extends Component {
 		console.log('APP STATE CHANGE in DAILY ENTRY ');
 		const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
 		if (!sameDay && AppState.currentState === 'active') {
-			console.log('Updating daily entry becuase it was stale');
-			this.getDailyEntry();
+			this.setState({ loadingEntry: true }, () => {
+				console.log('Updating daily entry becuase it was stale');
+				this.getDailyEntry();
+			});
 		}
 	};
 
@@ -97,7 +100,7 @@ class DailyLogEntry extends Component {
 		}
 	};
 	render() {
-		if (!this.state.dailyEntry) {
+		if (!this.state.dailyEntry || this.state.loadingEntry) {
 			return (
 				<View style={styles.loading}>
 					<ActivityIndicator size="large" color="#0000ff" />
