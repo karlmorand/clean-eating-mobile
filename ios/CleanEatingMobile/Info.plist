@@ -34,19 +34,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>15</string>
+	<string>17</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
-		<dict>
-			<!-- <key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict> -->
-		</dict>
+		<dict/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
