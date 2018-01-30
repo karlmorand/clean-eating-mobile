@@ -6,6 +6,7 @@ import DailyYesNo from '../components/DailyYesNo';
 import DailySlider from '../components/DailySlider';
 import DailyJournal from '../components/DailyJournal';
 import axios from 'axios';
+import moment from 'moment';
 import { prodApi, devApi } from '../../config.js';
 
 // TODO: Anytime the totalDailyPoints changes need to make an API call to store it on server, will need to have user info passed down, or pass daily points up to App
@@ -132,8 +133,11 @@ class DailyLogEntry extends Component {
 		}
 
 		return (
-			<View style={[containerStyle, styles.container]}>
+			<View style={styles.container}>
 				<View style={styles.titleContainer}>
+					<Text style={styles.title}>
+						{this.state.dailyEntry && moment(this.state.dailyEntry.date).format('ddd MMM Do')}
+					</Text>
 					{this.state.loadingTotal ? (
 						<Text style={styles.title}>
 							Today's points: <ActivityIndicator size="large" color="white" style={styles.smallLoading} />
@@ -152,6 +156,7 @@ class DailyLogEntry extends Component {
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
 		alignItems: 'center'
 	},
 	text: {
@@ -172,10 +177,10 @@ const styles = StyleSheet.create({
 	},
 	titleContainer: {
 		marginTop: 15,
-		padding: 10,
+		padding: 25,
 		backgroundColor: 'green',
 		borderRadius: 15,
-		height: '10%',
+		height: '12%',
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
