@@ -26,8 +26,8 @@ class History extends Component {
 		AppState.addEventListener('change', this._handleAppStateChange);
 	}
 
-	_handleAppStateChange = () => {
-		if (AppState.currentState === 'active') {
+	_handleAppStateChange = nextAppState => {
+		if (nextAppState === 'active') {
 			console.log('APP STATE CHANGE in HISTORY ');
 			this.getDailyEntryHistory();
 		}
