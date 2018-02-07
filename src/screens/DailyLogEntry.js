@@ -52,17 +52,18 @@ class DailyLogEntry extends Component {
 				.catch(err => console.log(err));
 		});
 	};
-	_handleAppStateChange = () => {
-		console.log('APP STATE CHANGE in DAILY ENTRY ');
-		if (!this.state.dailyEntry) {
-			this.getDailyEntry();
-		} else {
-			const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
-			if (!sameDay && AppState.currentState === 'active') {
-				this.setState({ loadingEntry: true }, () => {
-					console.log('Updating daily entry becuase it was stale');
-					this.getDailyEntry();
-				});
+	_handleAppStateChange = nextAppState => {
+		if (nextAppState === 'active') {
+			if (!this.state.dailyEntry) {
+				this.getDailyEntry();
+			} else {
+				const sameDay = isSameDay(this.state.dailyEntry.date, Date.now());
+				if (!sameDay) {
+					this.setState({ loadingEntry: true }, () => {
+						console.log('Updating daily entry becuase it was stale');
+						this.getDailyEntry();
+					});
+				}
 			}
 		}
 	};

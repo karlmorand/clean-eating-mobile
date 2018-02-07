@@ -76,8 +76,9 @@ export default class App extends Component<{}> {
 				'mongoId',
 				'refreshToken'
 			]);
-			if (loggedInUser[4][1]) {
-				this.updateAccessToken(loggedInUser[4][1]);
+			const refreshToken = await AsyncStorage.getItem('refreshToken');
+			if (refreshToken) {
+				this.updateAccessToken(refreshToken);
 				// this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
 			}
 		}
@@ -86,9 +87,9 @@ export default class App extends Component<{}> {
 	updateAccessToken = refreshToken => {
 		auth0.auth
 			.refreshToken({ refreshToken })
-			.then(async res => {
-				await AsyncStorage.setItem('accessToken', res.accessToken);
-				this.setState({ accessToken: res.accessToken }, () => {
+			.then(res => {
+				this.setState({ accessToken: res.accessToken }, async () => {
+					await AsyncStorage.setItem('accessToken', res.accessToken);
 					console.log('REFRESHED THE USER W/ NEW ACCESS TOKEN');
 				});
 			})
