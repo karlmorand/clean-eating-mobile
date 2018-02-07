@@ -68,24 +68,59 @@ export default class App extends Component<{}> {
 	};
 
 	_handleAppStateChange = async nextAppState => {
-		console.log('APP STATE CHANGE: ', nextAppState);
-		const loggedInUser = await AsyncStorage.multiGet(['accessToken', 'authId', 'onboardingComplete', 'mongoId']);
-		console.log(loggedInUser);
-		console.log(this.state);
+		if (nextAppState === 'active') {
+			const loggedInUser = await AsyncStorage.multiGet([
+				'accessToken',
+				'authId',
+				'onboardingComplete',
+				'mongoId',
+				'refreshToken'
+			]);
+			if (loggedInUser[4][1]) {
+				this.updateAccessToken(loggedInUser[4][1]);
+				// this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
+			}
+		}
 	};
 
+	updateAccessToken = refreshToken => {
+		auth0.auth
+			.refreshToken({ refreshToken })
+			.then(async res => {
+				await AsyncStorage.setItem('accessToken', res.accessToken);
+				this.setState({ accessToken: res.accessToken }, () => {
+					console.log('REFRESHED THE USER W/ NEW ACCESS TOKEN');
+				});
+			})
+			.catch(err => console.log('ERRRRR>>>>>', err));
+	};
+
+	shouldComponentUpdate(nextProps, nextState) {
+		// Don't refresh the UI when getting new accessToken via the refreshToken
+		// TODO: This looks pretty gross
+		if (this.state.accessToken && this.state.accessToken !== nextState.accessToken && nextState.accessToken !== null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	showLogin = () => {
 		// TODO: this looks gross, need to refactor at some point to better handle errors
 		auth0.webAuth
 			.authorize({
-				scope: 'openid profile',
+				scope: 'openid offline_access profile',
 				audience: 'https://cleaneatingapi.karlmorand.com'
 			})
 			.then(authUser => {
 				this.setState({ loading: true }, () => {
 					auth0.auth
 						.userInfo({ token: authUser.accessToken })
-						.then(res => {
+						.then(async res => {
+							try {
+								await AsyncStorage.setItem('refreshToken', authUser.refreshToken);
+							} catch (error) {
+								console.log('ERROR SAAVING');
+							}
 							this.getMongoProfile(res.sub, authUser.accessToken);
 						})
 						.catch(err => console.log(err));
@@ -96,6 +131,7 @@ export default class App extends Component<{}> {
 	};
 
 	getMongoProfile = (authId, accessToken) => {
+		// TODO: if this fails with a 401 response need to redirect to login/show a message that they need to log in again
 		console.log('Getting mongo profile');
 		// TODO: Need better error handling on the AsyncStorage stuff, or just use Realm
 		const headers = { Authorization: `Bearer ${accessToken}` };
