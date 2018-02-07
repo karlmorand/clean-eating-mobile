@@ -37,7 +37,7 @@ class History extends Component {
 		const { accessToken, user } = this.props.screenProps;
 		const headers = { Authorization: `Bearer ${accessToken}` };
 		if (!user) {
-			// TODO: throw a UI error here and redirect them somewhere
+			// TODO: throw a UI error here and redirect them somewhere or call logout function
 			return;
 		}
 		axios
