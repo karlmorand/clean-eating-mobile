@@ -18,34 +18,22 @@ class Onboarding extends Component {
 		return (
 			<View style={containerStyle}>
 				<ScrollView>
-					<Text style={styles.levelTitle}>Choose your challenge level & tap Submit</Text>
-					<ButtonGroup
-						selectedBackgroundColor="#30a350"
-						textStyle={{ fontWeight: 'bold' }}
-						onPress={this.handleChange}
-						selectedIndex={this.state.challengeLevel}
-						buttons={['Lifestyle', 'Jump Start', 'Performance']}
-						containerStyle={{ height: 40, marginBottom: 30 }}
-					/>
-
-					<Text style={styles.levelTitle}>Lifestyle</Text>
+					<Text style={styles.headline}>Welcome</Text>
+					<Text style={styles.levelTitle}>How the challenge works</Text>
 					<Text style={styles.textBody}>
-						For those who would like to eat for health and nutrition. Body Composition isn't the focus but rather
-						learning and completing long term lifestyle changes that will be the "baseline" we live most of our lives
-						on.
+						It's pretty simple: you get points for doing positive things like working out, getting enough sleep,
+						drinking plenty of water, and you lose points for eating garbage foods. So what can you eat...
 					</Text>
-					<Text style={styles.levelTitle}>Jump Start</Text>
+					<Text style={styles.levelTitle}>Food</Text>
+					<Text style={[styles.textBody, styles.quote]}>
+						"Eat meat and vegetables, nuts and seeds, some fruit, little starch, and no sugar."
+					</Text>
 					<Text style={styles.textBody}>
-						For those who don't know what "macros" are. Diet soda is a breakfast food and the idea of measuring food is
-						overwhelming. We all start somewhere. Let's start here.
+						We're keeping it simple for this challenge, so no complex charts listing every possible food choice. If you
+						feel like you have to ask if a food is OK then chances are it's not. Going without it for a few weeks won't
+						kill you. The point of this is to eat better, not see how far you can bend the rules.
 					</Text>
-					<Text style={styles.levelTitle}>Performance</Text>
-					<Text style={styles.textBody}>
-						Body composition is a must due to your sport. Being lean and strong is what will take your fitness to the
-						next level. You understand the benefits of weighing and measuring your food. It's just awful to not have
-						anyone to complain to or share recipes with.
-					</Text>
-					<Button onPress={this.handleSubmit} title="Submit" />
+					<Button onPress={this.handleSubmit} title="Start tracking!" />
 				</ScrollView>
 			</View>
 		);
@@ -53,14 +41,25 @@ class Onboarding extends Component {
 }
 
 const styles = StyleSheet.create({
+	headline: {
+		textAlign: 'center',
+		fontSize: 30,
+		fontWeight: 'bold',
+		textDecorationLine: 'underline',
+		marginBottom: 20
+	},
 	levelTitle: {
 		textAlign: 'center',
-		fontSize: 20,
+		fontSize: 25,
 		fontWeight: 'bold'
 	},
 	textBody: {
-		margin: 10,
-		fontSize: 15
+		margin: 15,
+		fontSize: 17,
+		lineHeight: 22
+	},
+	quote: {
+		fontStyle: 'italic'
 	}
 });
 
