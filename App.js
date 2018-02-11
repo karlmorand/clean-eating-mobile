@@ -91,10 +91,7 @@ export default class App extends Component {
       .refreshToken({ refreshToken })
       .then(res => {
         this.setState({ accessToken: res.accessToken }, async () => {
-          await AsyncStorage.multiSet([
-            ["accessToken", res.accessToken],
-            ["refreshToken", res.refreshToken]
-          ]);
+          await AsyncStorage.setItem("accessToken", res.accessToken);
           console.log("REFRESHED THE USER W/ NEW ACCESS TOKEN");
         });
       })
@@ -122,10 +119,12 @@ export default class App extends Component {
         audience: "https://cleaneatingapi.karlmorand.com"
       })
       .then(authUser => {
+        console.log("AUTH USER: ", authUser);
         this.setState({ loading: true }, () => {
           auth0.auth
             .userInfo({ token: authUser.accessToken })
             .then(async res => {
+              console.log("AUTH RES: ", res);
               try {
                 await AsyncStorage.setItem(
                   "refreshToken",
