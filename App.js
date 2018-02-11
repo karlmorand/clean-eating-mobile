@@ -78,13 +78,6 @@ export default class App extends Component {
 
   _handleAppStateChange = async nextAppState => {
     if (nextAppState === "active") {
-      const loggedInUser = await AsyncStorage.multiGet([
-        "accessToken",
-        "authId",
-        "onboardingComplete",
-        "mongoId",
-        "refreshToken"
-      ]);
       const refreshToken = await AsyncStorage.getItem("refreshToken");
       if (refreshToken) {
         this.updateAccessToken(refreshToken);
