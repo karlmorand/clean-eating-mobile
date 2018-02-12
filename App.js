@@ -77,11 +77,11 @@ export default class App extends Component {
   };
 
   _handleAppStateChange = async nextAppState => {
+    //need to be checking if the token is expired, or close to it, not just always refreshing
     if (nextAppState === "active") {
       const refreshToken = await AsyncStorage.getItem("refreshToken");
       if (refreshToken) {
         this.updateAccessToken(refreshToken);
-        // this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
       }
     }
   };
