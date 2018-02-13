@@ -10,7 +10,8 @@ import {
   AppState,
   SafeAreaView,
   NetInfo,
-  Alert
+  Alert,
+  InteractionManager
 } from "react-native";
 import Auth0 from "react-native-auth0";
 import Login from "./src/screens/Login";
@@ -47,6 +48,7 @@ export default class App extends Component {
 
   async componentDidMount() {
     console.log("COMPONENT DID MOUNT");
+
     AppState.addEventListener("change", this._handleAppStateChange);
     NetInfo.addEventListener("connectionChange", this.handleConnectionChange);
     const loggedInUser = await AsyncStorage.multiGet([

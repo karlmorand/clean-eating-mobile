@@ -21,3 +21,7 @@ AppState changes which causes
 
 * App uses AppState to accessToken and id in AsyncStorage to get their profile/daily entry
 * Router component is shown since they have an accessToken and id in AsyncStorage
+
+AppState change scenarios...
+
+* App was in memory,
