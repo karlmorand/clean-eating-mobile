@@ -7,7 +7,7 @@ import {
   AppState,
   ActivityIndicator
 } from "react-native";
-import { ListItem } from "react-native-elements";
+import { ListItem, ButtonGroup } from "react-native-elements";
 import { containerStyle } from "../config";
 import axios from "axios";
 
@@ -18,8 +18,10 @@ class Leaderboard extends Component {
     super(props);
     console.log("LEADERBOARD: ", this.props.screenProps);
     this.state = {
-      leaderboard: [],
-      refreshing: false
+      refreshing: false,
+      selectedButtonIndex: 0,
+      weeklyLeaderboard: [],
+      overallLeaderboard: []
     };
     if (__DEV__) {
       this.apiURL = devApi;
@@ -58,10 +60,17 @@ class Leaderboard extends Component {
     axios
       .get(`${this.apiURL}/leaderboard/${user.gym}`, { headers })
       .then(res => {
-        res.data.sort((a, b) => {
+        res.data.overallLeaderboard.sort((a, b) => {
           return b.total - a.total;
         });
-        this.setState({ leaderboard: res.data, refreshing: false });
+        res.data.weeklyLeaderboard.sort((a, b) => {
+          return b.total - a.total;
+        });
+        this.setState({
+          overallLeaderboard: res.data.overallLeaderboard,
+          weeklyLeaderboard: res.data.weeklyLeaderboard,
+          refreshing: false
+        });
       })
       .catch(err => {
         this.setState({ refreshing: false });
@@ -85,7 +94,9 @@ class Leaderboard extends Component {
       />
     );
   };
-
+  updateButtonIndex = selectedButtonIndex => {
+    this.setState({ selectedButtonIndex });
+  };
   handleRefresh = () => {
     this.setState(
       {
@@ -98,10 +109,44 @@ class Leaderboard extends Component {
   };
 
   _keyExtractor = (item, index) => item.id;
+  listToShow = () => {
+    switch (this.state.selectedButtonIndex) {
+      case 0:
+        return (
+          <FlatList
+            data={this.state.overallLeaderboard}
+            keyExtractor={this._keyExtractor}
+            renderItem={this.renderItem}
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            style={styles.list}
+          />
+        );
+        break;
 
+      case 1:
+        return (
+          <FlatList
+            data={this.state.weeklyLeaderboard}
+            keyExtractor={this._keyExtractor}
+            renderItem={this.renderItem}
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            style={styles.list}
+          />
+        );
+      default:
+        return <Text>Team Leaderboard will be here soon</Text>;
+        break;
+    }
+  };
   render() {
-    console.log("LEADERBOARD DATA: ", this.state.leaderboard);
-    if (!this.state.leaderboard.length) {
+    const buttons = ["Indv Overall", "Indv Weekly", "Team"];
+    const { selectedButtonIndex } = this.state;
+    if (
+      !this.state.overallLeaderboard.length ||
+      !this.state.weeklyLeaderboard.length
+    ) {
       return (
         <View style={containerStyle}>
           <Text style={styles.title}>Loading Leaderboard</Text>
@@ -112,14 +157,14 @@ class Leaderboard extends Component {
     return (
       <View style={containerStyle}>
         <Text style={styles.title}>Leaderboard</Text>
-        <FlatList
-          data={this.state.leaderboard}
-          keyExtractor={this._keyExtractor}
-          renderItem={this.renderItem}
-          refreshing={this.state.refreshing}
-          onRefresh={this.handleRefresh}
-          style={styles.list}
+        <ButtonGroup
+          onPress={this.updateButtonIndex}
+          selectedIndex={selectedButtonIndex}
+          buttons={buttons}
+          containerStyle={{ height: 35 }}
+          textStyle={styles.buttonText}
         />
+        {this.listToShow()}
       </View>
     );
   }
@@ -148,6 +193,9 @@ const styles = StyleSheet.create({
   },
   listItem: {
     borderBottomWidth: 0
+  },
+  buttonText: {
+    fontWeight: "bold"
   }
 });
 
