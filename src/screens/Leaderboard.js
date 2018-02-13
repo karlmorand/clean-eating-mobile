@@ -23,15 +23,28 @@ class Leaderboard extends Component {
 
 	componentDidMount() {
 		AppState.addEventListener('change', this._handleAppStateChange);
+		this._sub = this.props.navigation.addListener(
+			'didFocus',
+			this._onFocus
+		  );
+		console.log("Leaderboard Nav props: ", this.props.navigation);
+		
 		this.getCurrentLeaderboard();
 	}
 
+	_onFocus = () =>{
+		console.log("FOCUS")
+	}
 	_handleAppStateChange = () => {
 		if (AppState.currentState === 'active') {
 			console.log('APP STATE CHANGE in Leaderboard ');
 			this.getCurrentLeaderboard();
 		}
 	};
+
+	componentDidFocus(){
+		console.log("FOCUSED")
+	}
 
 	getCurrentLeaderboard = () => {
 		const { accessToken, user } = this.props.screenProps;
