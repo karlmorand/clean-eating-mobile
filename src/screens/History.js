@@ -31,9 +31,15 @@ class History extends Component {
   }
   componentDidMount() {
     this.getDailyEntryHistory();
+    this._sub = this.props.navigation.addListener("didFocus", this._onFocus);
     AppState.addEventListener("change", this._handleAppStateChange);
   }
 
+  _onFocus = () => {
+    this.setState({ refreshing: true }, () => {
+      this.getDailyEntryHistory();
+    });
+  };
   _handleAppStateChange = nextAppState => {
     if (nextAppState === "active") {
       console.log("APP STATE CHANGE in HISTORY ");
