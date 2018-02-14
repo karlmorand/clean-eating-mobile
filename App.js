@@ -19,6 +19,7 @@ import Router from "./src/screens/Router";
 import Onboarding from "./src/screens/Onboarding";
 import axios from "axios";
 import { devApi, prodApi } from "./config";
+import TeamPicker from "./src/components/TeamPicker";
 
 const auth0 = new Auth0({
   domain: "clean-eating.auth0.com",
@@ -35,7 +36,8 @@ export default class App extends Component {
       accessToken: null,
       mongoId: null,
       mongoUser: null, //TODO: probably don't need this, just need the mongoId
-      authId: null
+      authId: null,
+      showTeamPicker: false
     };
     // TODO: Use dev variable to figure out what api to use, update config file accordingly
     if (__DEV__) {
@@ -152,7 +154,7 @@ export default class App extends Component {
     axios
       .get(`${this.apiURL}/user/${authId}`, { headers })
       .then(async res => {
-        console.log(res.data);
+        console.log("USER PROFILE: ", res.data);
         await AsyncStorage.multiSet([
           ["accessToken", accessToken],
           ["authId", authId],
@@ -166,6 +168,23 @@ export default class App extends Component {
           loading: false,
           accessToken: accessToken
         });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  selectTeam = teamId => {
+    const headers = { Authorization: `Bearer ${this.state.accessToken}` };
+    const data = { team: teamId };
+
+    axios
+      .post(`${this.apiURL}/team/${this.state.mongoId}`, data, { headers })
+      .then(res => {
+        console.log("TEAM RES: ", res.data);
+        //TODO: need a better solution then gettting the mongo profile again, since the updated profile is already being sent down, but it doesn't have the gym name populated
+        // this.getMongoProfile(this.state.authId, this.state.accessToken)
+        this.setState({ showTeamPicker: false, mongoUser: res.data });
       })
       .catch(err => {
         console.log(err);
@@ -200,6 +219,10 @@ export default class App extends Component {
     );
   };
 
+  showTeamPicker = () => {
+    this.setState({ showTeamPicker: true });
+  };
+
   onboardUser = challengeLevel => {
     const headers = { Authorization: `Bearer ${this.state.accessToken}` };
     const data = { challengeLevel: challengeLevel };
@@ -213,7 +236,8 @@ export default class App extends Component {
         await AsyncStorage.setItem("onboardingComplete", "true");
         this.setState({
           mongoUser: res.data,
-          onboardingComplete: res.data.onboardingComplete
+          onboardingComplete: res.data.onboardingComplete,
+          showTeamPicker: true
         });
       })
       .catch(err => console.log(err));
@@ -239,6 +263,18 @@ export default class App extends Component {
         </SafeAreaView>
       );
     }
+    if (this.state.showTeamPicker) {
+      return (
+        <SafeAreaView style={styles.safeArea}>
+          <TeamPicker
+            closeModal={this.selectTeam}
+            visible={this.state.showTeamPicker}
+            gymId={this.state.mongoUser.gym}
+            accessToken={this.state.accessToken}
+          />
+        </SafeAreaView>
+      );
+    }
     if (!this.state.onboardingComplete) {
       return (
         <SafeAreaView style={styles.safeArea}>
@@ -253,6 +289,7 @@ export default class App extends Component {
         mongoId={this.state.mongoId}
         accessToken={this.state.accessToken}
         logout={this.userLogout}
+        showTeamPicker={this.showTeamPicker}
       />
     );
   }
