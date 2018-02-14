@@ -65,7 +65,8 @@ class Router extends Component {
           user: this.props.user,
           logout: this.props.logout,
           mongoId: this.props.mongoId,
-          accessToken: this.props.accessToken
+          accessToken: this.props.accessToken,
+          showTeamPicker: this.props.showTeamPicker
         }}
       />
     );
