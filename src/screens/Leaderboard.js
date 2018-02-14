@@ -21,7 +21,8 @@ class Leaderboard extends Component {
       refreshing: false,
       selectedButtonIndex: 0,
       weeklyLeaderboard: [],
-      overallLeaderboard: []
+      overallLeaderboard: [],
+      teamLeaderboard: []
     };
     if (__DEV__) {
       this.apiURL = devApi;
@@ -69,6 +70,7 @@ class Leaderboard extends Component {
         this.setState({
           overallLeaderboard: res.data.overallLeaderboard,
           weeklyLeaderboard: res.data.weeklyLeaderboard,
+          teamLeaderboard: res.data.teamLeaderboard,
           refreshing: false
         });
       })
@@ -135,8 +137,21 @@ class Leaderboard extends Component {
             style={styles.list}
           />
         );
+        break;
+
+      case 2:
+        return (
+          <FlatList
+            data={this.state.teamLeaderboard}
+            keyExtractor={this._keyExtractor}
+            renderItem={this.renderItem}
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            style={styles.list}
+          />
+        );
       default:
-        return <Text>Team Leaderboard will be here soon</Text>;
+        return <Text>Leaderboard error, please try again</Text>;
         break;
     }
   };
