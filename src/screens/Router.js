@@ -52,9 +52,9 @@ class Router extends Component {
       SettingsScreen: {
         screen: SettingsScreen,
         navigationOptions: {
-          tabBarLabel: "Settings",
+          tabBarLabel: "Info",
           tabBarIcon: ({ tintColor }) => (
-            <Icon name="settings" size={35} color={tintColor} />
+            <Icon name="info-outline" size={35} color={tintColor} />
           )
         }
       }
