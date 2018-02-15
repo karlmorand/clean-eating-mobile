@@ -67,6 +67,9 @@ class Leaderboard extends Component {
         res.data.weeklyLeaderboard.sort((a, b) => {
           return b.total - a.total;
         });
+        res.data.teamLeaderboard.sort((a, b) => {
+          return b.total - a.total;
+        });
         this.setState({
           overallLeaderboard: res.data.overallLeaderboard,
           weeklyLeaderboard: res.data.weeklyLeaderboard,
