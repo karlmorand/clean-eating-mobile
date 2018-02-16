@@ -32,7 +32,7 @@ export default class App extends Component {
     console.log("CONSTRUCTOR: ", AppState.currentState);
     this.state = {
       onboardingComplete: false,
-      loading: false,
+      loading: true,
       accessToken: null,
       mongoId: null,
       mongoUser: null, //TODO: probably don't need this, just need the mongoId
@@ -66,6 +66,8 @@ export default class App extends Component {
         loggedInUser[2][1] === "true"
       );
       this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
+    } else {
+      this.setState({ loading: false });
     }
   }
 
