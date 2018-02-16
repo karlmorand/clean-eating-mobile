@@ -32,7 +32,7 @@ class History extends Component {
   componentDidMount() {
     this.getDailyEntryHistory();
     this._sub = this.props.navigation.addListener("didFocus", this._onFocus);
-    AppState.addEventListener("change", this._handleAppStateChange);
+    // AppState.addEventListener("change", this._handleAppStateChange);
   }
 
   _onFocus = () => {

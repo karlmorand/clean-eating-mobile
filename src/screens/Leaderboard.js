@@ -32,7 +32,7 @@ class Leaderboard extends Component {
   }
 
   componentDidMount() {
-    AppState.addEventListener("change", this._handleAppStateChange);
+    // AppState.addEventListener("change", this._handleAppStateChange);
     this._sub = this.props.navigation.addListener("didFocus", this._onFocus);
 
     this.getCurrentLeaderboard();
