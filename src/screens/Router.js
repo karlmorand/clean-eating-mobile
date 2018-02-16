@@ -21,44 +21,49 @@ class Router extends Component {
     console.log("ROUTER MOUNTED!!!");
   }
   render() {
-    const BasicApp = TabNavigator({
-      DailyLogEntry: {
-        screen: DailyLogEntry,
-        navigationOptions: {
-          tabBarLabel: "Today",
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="today" size={35} color={tintColor} />
-          )
+    const BasicApp = TabNavigator(
+      {
+        DailyLogEntry: {
+          screen: DailyLogEntry,
+          navigationOptions: {
+            tabBarLabel: "Today",
+            tabBarIcon: ({ tintColor }) => (
+              <Icon name="today" size={35} color={tintColor} />
+            )
+          }
+        },
+        Leaderboard: {
+          screen: Leaderboard,
+          navigationOptions: {
+            tabBarLabel: "Leaderboard",
+            tabBarIcon: ({ tintColor }) => (
+              <Icon name="show-chart" size={35} color={tintColor} />
+            )
+          }
+        },
+        HistoryNav: {
+          screen: HistoryNav,
+          navigationOptions: {
+            tabBarLabel: "History",
+            tabBarIcon: ({ tintColor }) => (
+              <Icon name="history" size={35} color={tintColor} />
+            )
+          }
+        },
+        SettingsScreen: {
+          screen: SettingsScreen,
+          navigationOptions: {
+            tabBarLabel: "Info",
+            tabBarIcon: ({ tintColor }) => (
+              <Icon name="info-outline" size={35} color={tintColor} />
+            )
+          }
         }
       },
-      Leaderboard: {
-        screen: Leaderboard,
-        navigationOptions: {
-          tabBarLabel: "Leaderboard",
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="show-chart" size={35} color={tintColor} />
-          )
-        }
-      },
-      HistoryNav: {
-        screen: HistoryNav,
-        navigationOptions: {
-          tabBarLabel: "History",
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="history" size={35} color={tintColor} />
-          )
-        }
-      },
-      SettingsScreen: {
-        screen: SettingsScreen,
-        navigationOptions: {
-          tabBarLabel: "Info",
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="info-outline" size={35} color={tintColor} />
-          )
-        }
+      {
+        swipeEnabled: true
       }
-    });
+    );
     return (
       <BasicApp
         screenProps={{
