@@ -269,7 +269,8 @@ export default class App extends Component {
         this.setState({
           mongoUser: res.data,
           onboardingComplete: res.data.onboardingComplete,
-          showTeamPicker: true
+          showTeamPicker: true,
+          loading:false
         });
       })
       .catch(err => console.log(err));
@@ -317,6 +318,21 @@ export default class App extends Component {
           <Onboarding onboardUser={this.onboardUser} />
         </SafeAreaView>
       );
+    }
+    if(!this.state.mongoId){
+      console.log("NO MONGO ID");
+      Alert.alert(
+        "Error getting profile",
+        "Please login again.",
+        [{ text: "OK", onPress: () => this.userLogout() }],
+        { cancelable: false }
+      );
+      return (
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.container}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        </SafeAreaView>)
     }
     return (
       <Router
