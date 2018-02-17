@@ -21,6 +21,11 @@ import axios from "axios";
 import { devApi, prodApi } from "./config";
 import TeamPicker from "./src/components/TeamPicker";
 
+import { Sentry } from 'react-native-sentry';
+
+Sentry.config('https://ea66ac6e6f1e459780ad970670698615:cc95ded5d6114990827584e05b1a15cf@sentry.io/289792').install();
+
+
 const auth0 = new Auth0({
   domain: "clean-eating.auth0.com",
   clientId: "F4tg24oB2Xm6VsQ5eUhISkykK4S5T8xy"
@@ -140,14 +145,15 @@ export default class App extends Component {
                   );
                 } catch (error) {
                   console.log("ERROR SAAVING");
+                  this.userLogout()
                 }
                 this.getMongoProfile(res.sub, authUser.accessToken);
               })
-              .catch(err => console.log(err));
+              .catch(err => this.userLogout());
           });
         })
         // TODO: Handle this error
-        .catch(error => console.log(error));
+        .catch(error => this.userLogout());
     });
   };
 
@@ -159,7 +165,15 @@ export default class App extends Component {
     axios
       .get(`${this.apiURL}/user/${authId}`, { headers })
       .then(async res => {
-        console.log("USER PROFILE: ", res.data);
+        console.log("RES>>>>", res); //TODO: this if check seems pretty gross
+        if (res.status >= 400 || !res.data || !res.data.authId){
+          Alert.alert(
+            "Error getting profile",
+            "Please login again.",
+            [{ text: "OK", onPress: () => this.userLogout() }],
+            { cancelable: false }
+          );
+        } else {
         await AsyncStorage.multiSet([
           ["accessToken", accessToken],
           ["authId", authId],
@@ -173,9 +187,16 @@ export default class App extends Component {
           loading: false,
           accessToken: accessToken
         });
+      }
       })
       .catch(err => {
         console.log(err);
+        Alert.alert(
+          "Error getting profile",
+          "Please login again.",
+          [{ text: "OK", onPress: () => this.userLogout() }],
+          { cancelable: false }
+        );
       });
   };
 
@@ -198,14 +219,17 @@ export default class App extends Component {
 
   userLogout = () => {
     AsyncStorage.multiRemove(
-      ["accessToken", "authId", "onboardingComplete"],
+      ["accessToken", "authId", "onboardingComplete", "mongoId"],
       () => {
         if (Platform.OS === "android") {
           this.setState({
             accessToken: null,
             authId: null,
             mongoId: null,
-            mongoUser: null
+            mongoUser: null,
+            loading:false,
+            showTeamPicker: false,
+            loggingIn: false
           });
         } else {
           auth0.webAuth
@@ -215,7 +239,10 @@ export default class App extends Component {
                 accessToken: null,
                 authId: null,
                 mongoId: null,
-                mongoUser: null
+                mongoUser: null,
+                loading:false,
+                showTeamPicker: false,
+                loggingIn: false
               });
             })
             .catch(error => console.log(error));
