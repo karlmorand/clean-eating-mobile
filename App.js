@@ -37,7 +37,8 @@ export default class App extends Component {
       mongoId: null,
       mongoUser: null, //TODO: probably don't need this, just need the mongoId
       authId: null,
-      showTeamPicker: false
+      showTeamPicker: false,
+      loggingIn: false
     };
     // TODO: Use dev variable to figure out what api to use, update config file accordingly
     if (__DEV__) {
@@ -119,33 +120,35 @@ export default class App extends Component {
   }
   showLogin = () => {
     // TODO: this looks gross, need to refactor at some point to better handle errors
-    auth0.webAuth
-      .authorize({
-        scope: "openid offline_access profile",
-        audience: "https://cleaneatingapi.karlmorand.com"
-      })
-      .then(authUser => {
-        console.log("AUTH USER: ", authUser);
-        this.setState({ loading: true }, () => {
-          auth0.auth
-            .userInfo({ token: authUser.accessToken })
-            .then(async res => {
-              console.log("AUTH RES: ", res);
-              try {
-                await AsyncStorage.setItem(
-                  "refreshToken",
-                  authUser.refreshToken
-                );
-              } catch (error) {
-                console.log("ERROR SAAVING");
-              }
-              this.getMongoProfile(res.sub, authUser.accessToken);
-            })
-            .catch(err => console.log(err));
-        });
-      })
-      // TODO: Handle this error
-      .catch(error => console.log(error));
+    this.setState({ loggingIn: true }, () => {
+      auth0.webAuth
+        .authorize({
+          scope: "openid offline_access profile",
+          audience: "https://cleaneatingapi.karlmorand.com"
+        })
+        .then(authUser => {
+          console.log("AUTH USER: ", authUser);
+          this.setState({ loading: true, loggingIn: false }, () => {
+            auth0.auth
+              .userInfo({ token: authUser.accessToken })
+              .then(async res => {
+                console.log("AUTH RES: ", res);
+                try {
+                  await AsyncStorage.setItem(
+                    "refreshToken",
+                    authUser.refreshToken
+                  );
+                } catch (error) {
+                  console.log("ERROR SAAVING");
+                }
+                this.getMongoProfile(res.sub, authUser.accessToken);
+              })
+              .catch(err => console.log(err));
+          });
+        })
+        // TODO: Handle this error
+        .catch(error => console.log(error));
+    });
   };
 
   getMongoProfile = (authId, accessToken) => {
@@ -251,7 +254,11 @@ export default class App extends Component {
       return (
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.container}>
-            <Login handlePress={this.showLogin} />
+            {this.state.loggingIn ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <Login handlePress={this.showLogin} />
+            )}
           </View>
         </SafeAreaView>
       );
