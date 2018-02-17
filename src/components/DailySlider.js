@@ -7,7 +7,7 @@ class DailySlider extends Component {
     valueChange: 0
   };
 
-  handleChange = newValue => {
+  submitValueChange = newValue => {
     this.setState({ value: newValue }, () => {
       this.props.handlePointsChange(
         this.props.questionId,
@@ -15,6 +15,10 @@ class DailySlider extends Component {
         this.props.addToTotal
       );
     });
+  };
+
+  handleChangeLocally = newValue => {
+    this.setState({ value: newValue });
   };
 
   render() {
@@ -30,7 +34,8 @@ class DailySlider extends Component {
             step={1}
             style={{ width: 300 }}
             value={this.state.value}
-            onSlidingComplete={this.handleChange}
+            onValueChange={this.handleChangeLocally}
+            onSlidingComplete={this.submitValueChange}
           />
         </View>
         <Text style={styles.additionalNotes}>{this.props.additionalNotes}</Text>
