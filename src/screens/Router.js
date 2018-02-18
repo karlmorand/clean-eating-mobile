@@ -7,7 +7,7 @@ import {
   Picker,
   InteractionManager
 } from "react-native";
-import { TabNavigator } from "react-navigation";
+import { TabNavigator, TabBarBottom } from "react-navigation";
 import { Icon } from "react-native-elements";
 
 import SettingsScreen from "./SettingsScreen";
@@ -61,7 +61,9 @@ class Router extends Component {
         }
       },
       {
-        swipeEnabled: true
+        swipeEnabled: true,
+        tabBarComponent: TabBarBottom,
+        tabBarPosition: "bottom"
       }
     );
     return (
