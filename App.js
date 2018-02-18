@@ -219,7 +219,7 @@ export default class App extends Component {
 
   userLogout = () => {
     AsyncStorage.multiRemove(
-      ["accessToken", "authId", "onboardingComplete", "mongoId"],
+      ["accessToken", "authId", "onboardingComplete", "mongoId", "refreshToken"],
       () => {
         if (Platform.OS === "android") {
           this.setState({
