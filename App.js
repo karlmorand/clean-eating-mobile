@@ -21,10 +21,11 @@ import axios from "axios";
 import { devApi, prodApi } from "./config";
 import TeamPicker from "./src/components/TeamPicker";
 
-import { Sentry } from 'react-native-sentry';
+import { Sentry } from "react-native-sentry";
 
-Sentry.config('https://ea66ac6e6f1e459780ad970670698615:cc95ded5d6114990827584e05b1a15cf@sentry.io/289792').install();
-
+Sentry.config(
+  "https://ea66ac6e6f1e459780ad970670698615:cc95ded5d6114990827584e05b1a15cf@sentry.io/289792"
+).install();
 
 const auth0 = new Auth0({
   domain: "clean-eating.auth0.com",
@@ -145,7 +146,7 @@ export default class App extends Component {
                   );
                 } catch (error) {
                   console.log("ERROR SAAVING");
-                  this.userLogout()
+                  this.userLogout();
                 }
                 this.getMongoProfile(res.sub, authUser.accessToken);
               })
@@ -166,7 +167,7 @@ export default class App extends Component {
       .get(`${this.apiURL}/user/${authId}`, { headers })
       .then(async res => {
         console.log("RES>>>>", res); //TODO: this if check seems pretty gross
-        if (res.status >= 400 || !res.data || !res.data.authId){
+        if (res.status >= 400 || !res.data || !res.data.authId) {
           Alert.alert(
             "Error getting profile",
             "Please login again.",
@@ -174,23 +175,23 @@ export default class App extends Component {
             { cancelable: false }
           );
         } else {
-        await AsyncStorage.multiSet([
-          ["accessToken", accessToken],
-          ["authId", authId],
-          ["mongoId", res.data._id]
-        ]);
-        this.setState({
-          mongoUser: res.data,
-          mongoId: res.data._id,
-          authId: res.data.authId,
-          onboardingComplete: res.data.onboardingComplete,
-          loading: false,
-          accessToken: accessToken
-        });
-      }
+          await AsyncStorage.multiSet([
+            ["accessToken", accessToken],
+            ["authId", authId],
+            ["mongoId", res.data._id]
+          ]);
+          this.setState({
+            mongoUser: res.data,
+            mongoId: res.data._id,
+            authId: res.data.authId,
+            onboardingComplete: res.data.onboardingComplete,
+            loading: false,
+            accessToken: accessToken
+          });
+        }
       })
       .catch(err => {
-        console.log(err);
+        console.log("Couldn't get user profile: ", err);
         Alert.alert(
           "Error getting profile",
           "Please login again.",
@@ -219,7 +220,13 @@ export default class App extends Component {
 
   userLogout = () => {
     AsyncStorage.multiRemove(
-      ["accessToken", "authId", "onboardingComplete", "mongoId", "refreshToken"],
+      [
+        "accessToken",
+        "authId",
+        "onboardingComplete",
+        "mongoId",
+        "refreshToken"
+      ],
       () => {
         if (Platform.OS === "android") {
           this.setState({
@@ -227,7 +234,7 @@ export default class App extends Component {
             authId: null,
             mongoId: null,
             mongoUser: null,
-            loading:false,
+            loading: false,
             showTeamPicker: false,
             loggingIn: false
           });
@@ -240,7 +247,7 @@ export default class App extends Component {
                 authId: null,
                 mongoId: null,
                 mongoUser: null,
-                loading:false,
+                loading: false,
                 showTeamPicker: false,
                 loggingIn: false
               });
@@ -270,7 +277,7 @@ export default class App extends Component {
           mongoUser: res.data,
           onboardingComplete: res.data.onboardingComplete,
           showTeamPicker: true,
-          loading:false
+          loading: false
         });
       })
       .catch(err => console.log(err));
@@ -319,7 +326,7 @@ export default class App extends Component {
         </SafeAreaView>
       );
     }
-    if(!this.state.mongoId){
+    if (!this.state.mongoId) {
       console.log("NO MONGO ID");
       Alert.alert(
         "Error getting profile",
@@ -332,7 +339,8 @@ export default class App extends Component {
           <View style={styles.container}>
             <ActivityIndicator size="large" color="#0000ff" />
           </View>
-        </SafeAreaView>)
+        </SafeAreaView>
+      );
     }
     return (
       <Router
