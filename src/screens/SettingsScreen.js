@@ -27,7 +27,8 @@ export default class SettingsScreen extends React.Component {
   render() {
     const { goBack } = this.props.navigation;
     let userTeam;
-    if (
+    if (//TODO: not a fan of this nonsense
+      this.props.screenProps.user &&
       this.props.screenProps.user.team &&
       this.props.screenProps.user.team.name
     ) {
