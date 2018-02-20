@@ -313,7 +313,7 @@ export default class App extends Component {
           <TeamPicker
             closeModal={this.selectTeam}
             visible={this.state.showTeamPicker}
-            gymId={this.state.mongoUser.gym}
+            gymId={this.state.mongoUser.gym._id}
             accessToken={this.state.accessToken}
           />
         </SafeAreaView>
