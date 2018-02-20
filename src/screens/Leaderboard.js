@@ -59,7 +59,7 @@ class Leaderboard extends Component {
       return;
     }
     axios
-      .get(`${this.apiURL}/leaderboard/${user.gym}`, { headers })
+      .get(`${this.apiURL}/leaderboard/${user.gym._id}`, { headers })
       .then(res => {
         res.data.overallLeaderboard.sort((a, b) => {
           return b.total - a.total;
