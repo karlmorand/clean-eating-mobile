@@ -28,9 +28,9 @@ export default class SettingsScreen extends React.Component {
     this.props.screenProps.showTeamPicker();
   };
   contactSupport = () => {
-    Linking.openURL(
-      "mailto:karljmorand@gmail.com@gmail.com?subject=Broccoli"
-    ).catch(err => console.log("Error opening email sheet... ", err));
+    Linking.openURL("mailto:karljmorand@gmail.com?subject=Broccoli").catch(
+      err => console.log("Error opening email sheet... ", err)
+    );
   };
 
   // showEmailSheet = () => {
