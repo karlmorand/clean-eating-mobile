@@ -15,6 +15,7 @@
     "react-native": "0.53.0",
     "react-native-auth0": "^1.2.1",
     "react-native-elements": "^0.18.5",
+    "react-native-markdown-view": "^1.1.4",
     "react-native-sentry": "^0.34.0",
     "react-native-vector-icons": "^4.5.0",
     "react-navigation": "^1.0.3"
