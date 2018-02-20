@@ -81,6 +81,9 @@ export default class MyComponent extends Component {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "white"
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center"
