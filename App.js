@@ -205,6 +205,15 @@ export default class App extends Component {
     const headers = { Authorization: `Bearer ${this.state.accessToken}` };
     const data = { team: teamId };
 
+    if (!this.state.mongoId) {
+      Alert.alert(
+        "Error",
+        "Please login again.",
+        [{ text: "OK", onPress: () => this.userLogout() }],
+        { cancelable: false }
+      );
+    }
+
     axios
       .post(`${this.apiURL}/team/${this.state.mongoId}`, data, { headers })
       .then(res => {
@@ -265,6 +274,15 @@ export default class App extends Component {
   onboardUser = challengeLevel => {
     const headers = { Authorization: `Bearer ${this.state.accessToken}` };
     const data = { challengeLevel: challengeLevel };
+
+    if (!this.state.mongoId) {
+      Alert.alert(
+        "Error",
+        "Please login again.",
+        [{ text: "OK", onPress: () => this.userLogout() }],
+        { cancelable: false }
+      );
+    }
     axios
       .post(
         `${this.apiURL}/user/${this.state.mongoId}/setup`,
