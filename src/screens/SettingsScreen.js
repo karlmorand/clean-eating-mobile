@@ -100,8 +100,7 @@ export default class SettingsScreen extends React.Component {
           <Button onPress={this.showTeamPicker} title="Change Teams" />
           <Card title="Food guide:" titleStyle={styles.levelTitle}>
             <Text style={styles.textBody}>
-              "Eat meat and vegetables, nuts and seeds, some fruit, little
-              starch, and no sugar." - Greg Glassman
+              {this.props.screenProps.user.gym.foodGuide}
             </Text>
             <Button
               onPress={this.showFoodModal}
