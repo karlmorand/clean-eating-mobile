@@ -12,11 +12,15 @@ import {
 import { Avatar, Card } from "react-native-elements";
 import { containerStyle } from "../config";
 import TeamPicker from "../components/TeamPicker";
-import { MarkdownView } from "react-native-markdown-view";
+import FoodGuideDetail from "../components/FoodGuideDetail";
+import Markdown from "react-native-markdown-renderer";
 
 export default class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showFoodModal: false
+    };
   }
   static navigationOptions = {
     tabBarLabel: "Setup"
@@ -38,6 +42,13 @@ export default class SettingsScreen extends React.Component {
   //     err => console.error("An error occurred", err)
   //   );
   // };
+  showFoodModal = () => {
+    this.setState({ showFoodModal: true });
+  };
+  closeFoodModal = () => {
+    this.setState({ showFoodModal: false });
+  };
+
   render() {
     const { goBack } = this.props.navigation;
     let userTeam;
@@ -60,6 +71,16 @@ export default class SettingsScreen extends React.Component {
       );
     }
 
+    if (this.state.showFoodModal) {
+      return (
+        <FoodGuideDetail
+          foodGuide={this.props.screenProps.user.gym.shoppingList}
+          closeModal={this.closeFoodModal}
+          visible={this.state.showFoodModal}
+        />
+      );
+    }
+
     // <Button title="Go back to home tab" onPress={() => goBack()} />
     return (
       <View style={[containerStyle, styles.container]}>
@@ -78,9 +99,14 @@ export default class SettingsScreen extends React.Component {
           {userTeam}
           <Button onPress={this.showTeamPicker} title="Change Teams" />
           <Card title="Food guide:" titleStyle={styles.levelTitle}>
-            <MarkdownView styles={markdownStyle}>
-              {this.props.screenProps.user.gym.foodGuide}
-            </MarkdownView>
+            <Text style={styles.textBody}>
+              "Eat meat and vegetables, nuts and seeds, some fruit, little
+              starch, and no sugar." - Greg Glassman
+            </Text>
+            <Button
+              onPress={this.showFoodModal}
+              title="Show Detailed Food Guide"
+            />
           </Card>
           <Card title="Questions or feedback?" titleStyle={styles.levelTitle}>
             <Text style={styles.textBody}>
