@@ -8,8 +8,8 @@ import {
   ScrollView,
   SafeAreaView
 } from "react-native";
-import Markdown from "react-native-markdown-renderer";
 import { Card } from "react-native-elements";
+import { MarkdownView } from "react-native-markdown-view";
 
 export default class FoodGuideDetail extends Component {
   constructor(props) {
@@ -21,11 +21,11 @@ export default class FoodGuideDetail extends Component {
     const items =
       section.items.length === 1
         ? section.items[0]
-        : `- ${section.items.join("\n- ")}`;
+        : `* ${section.items.join("\n* ")}`;
 
     return (
       <Card title={section.sectionTitle} key={index}>
-        <Markdown>{items}</Markdown>
+        <MarkdownView styles={markdownStyles}>{items}</MarkdownView>
       </Card>
     );
   };
@@ -47,13 +47,35 @@ export default class FoodGuideDetail extends Component {
             {this.props.foodGuide.map((section, index) =>
               this.createFoodCard(section, index)
             )}
-            <Button title="Close" onPress={this.closeModal} />
           </ScrollView>
+          <View style={styles.closeButton}>
+            <Button title="Close" onPress={this.closeModal} />
+          </View>
         </SafeAreaView>
       </Modal>
     );
   }
 }
+
+const markdownStyles = {
+  paragraph: {
+    fontSize: 20
+  },
+  listItemBullet: {
+    // marginTop: 3
+    paddingRight: 0,
+    marginRight: 0
+  },
+  text: {
+    fontSize: 17
+  },
+  listItem: {
+    margin: 5
+  },
+  paragraph: {
+    lineHeight: 25
+  }
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -67,5 +89,8 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1
+  },
+  closeButton: {
+    marginBottom: 15
   }
 });
