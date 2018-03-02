@@ -64,15 +64,15 @@ export default class App extends Component {
       "accessToken",
       "authId",
       "onboardingComplete",
-      "mongoId"
+      "mongoId",
+      "refreshToken"
     ]);
     if (loggedInUser[0][1]) {
-      console.log(
-        "loggedInUser: ",
-        loggedInUser,
-        loggedInUser[2][1] === "true"
-      );
-      this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
+      console.log("loggedInUser: ", loggedInUser);
+      // refresh the token before loading their mongoProfile
+      await this.updateAccessToken(loggedInUser[4][1]);
+
+      this.getMongoProfile(loggedInUser[1][1], this.state.accessToken);
     } else {
       this.setState({ loading: false });
     }
@@ -100,15 +100,27 @@ export default class App extends Component {
   };
 
   updateAccessToken = refreshToken => {
-    auth0.auth
-      .refreshToken({ refreshToken })
-      .then(res => {
-        this.setState({ accessToken: res.accessToken }, async () => {
-          await AsyncStorage.setItem("accessToken", res.accessToken);
-          console.log("REFRESHED THE USER W/ NEW ACCESS TOKEN");
+    //TODO: not rejecting this promise...might need to refactor, right now just catching err from auth0 call to get new token and calling logout flow to have user re-auth
+    return new Promise((resolve, reject) => {
+      auth0.auth
+        .refreshToken({ refreshToken })
+        .then(res => {
+          this.setState({ accessToken: res.accessToken }, async () => {
+            await AsyncStorage.setItem("accessToken", res.accessToken);
+            console.log("REFRESHED THE USER W/ NEW ACCESS TOKEN");
+            resolve(res.accessToken);
+          });
+        })
+        .catch(err => {
+          console.log("ERRRRR>>>>>", err);
+          Alert.alert(
+            "Error getting profile",
+            "Please login again.",
+            [{ text: "OK", onPress: () => this.userLogout() }],
+            { cancelable: false }
+          );
         });
-      })
-      .catch(err => console.log("ERRRRR>>>>>", err));
+    });
   };
 
   shouldComponentUpdate(nextProps, nextState) {

@@ -25,3 +25,13 @@ AppState changes which causes
 AppState change scenarios...
 
 * App was in memory,
+
+# 401 bug
+
+When would it hit constructor:
+
+* First launch after install...not an issue b/c they won't have any AsyncStorage data
+* After logout...also not an issue b/c they won't have AsyncStorage data b/c it's removed on logout
+* After force quit/being backgrounded and going out of memory...token could be expired, refresh to be safe
+
+...so anytime they're in the constructor AND they have AsyncStorage data from previous use it should refresh the token THEN get their profile
