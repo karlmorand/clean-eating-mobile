@@ -123,9 +123,10 @@ export default class App extends Component {
             let newTokenExpiration = moment()
               .add(res.expiresIn, "seconds")
               .valueOf();
+            let newTokenStr = newTokenExpiration.toString();
             await AsyncStorage.multiSet([
               ["accessToken", res.accessToken],
-              ["tokenExpiration", `${newTokenExpiration}`]
+              ["tokenExpiration", newTokenStr]
             ]);
             console.log("REFRESHED THE USER W/ NEW ACCESS TOKEN");
             resolve(res.accessToken);
