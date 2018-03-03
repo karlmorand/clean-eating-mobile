@@ -20,6 +20,7 @@ import Onboarding from "./src/screens/Onboarding";
 import axios from "axios";
 import { devApi, prodApi } from "./config";
 import TeamPicker from "./src/components/TeamPicker";
+import moment from "moment";
 
 import { Sentry } from "react-native-sentry";
 
@@ -56,8 +57,6 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    console.log("COMPONENT DID MOUNT");
-
     AppState.addEventListener("change", this._handleAppStateChange);
     NetInfo.addEventListener("connectionChange", this.handleConnectionChange);
     const loggedInUser = await AsyncStorage.multiGet([
@@ -65,14 +64,25 @@ export default class App extends Component {
       "authId",
       "onboardingComplete",
       "mongoId",
-      "refreshToken"
+      "refreshToken",
+      "tokenExpiration"
     ]);
-    if (loggedInUser[0][1]) {
-      console.log("loggedInUser: ", loggedInUser);
-      // refresh the token before loading their mongoProfile
-      await this.updateAccessToken(loggedInUser[4][1]);
+    console.log(loggedInUser);
 
-      this.getMongoProfile(loggedInUser[1][1], this.state.accessToken);
+    if (loggedInUser[0][1]) {
+      let tokenExpired = moment().isSameOrAfter(
+        moment(parseInt(loggedInUser[5][1]))
+      );
+      if (tokenExpired) {
+        console.log(
+          "Current token expired, getting new one before getting profile"
+        );
+        await this.updateAccessToken(loggedInUser[4][1]);
+        this.getMongoProfile(loggedInUser[1][1], this.state.accessToken);
+      } else {
+        console.log("Current token valid, using it to get profile");
+        this.getMongoProfile(loggedInUser[1][1], loggedInUser[0][1]);
+      }
     } else {
       this.setState({ loading: false });
     }
@@ -100,13 +110,23 @@ export default class App extends Component {
   };
 
   updateAccessToken = refreshToken => {
+    console.log("Starting refresh token flow");
+
     //TODO: not rejecting this promise...might need to refactor, right now just catching err from auth0 call to get new token and calling logout flow to have user re-auth
     return new Promise((resolve, reject) => {
       auth0.auth
         .refreshToken({ refreshToken })
         .then(res => {
+          console.log("REFRESH TOKEN RES: ", res.expiresIn);
+
           this.setState({ accessToken: res.accessToken }, async () => {
-            await AsyncStorage.setItem("accessToken", res.accessToken);
+            let newTokenExpiration = moment()
+              .add(res.expiresIn, "seconds")
+              .valueOf();
+            await AsyncStorage.multiSet([
+              ["accessToken", res.accessToken],
+              ["tokenExpiration", `${newTokenExpiration}`]
+            ]);
             console.log("REFRESHED THE USER W/ NEW ACCESS TOKEN");
             resolve(res.accessToken);
           });
@@ -131,8 +151,10 @@ export default class App extends Component {
       this.state.accessToken !== nextState.accessToken &&
       nextState.accessToken !== null
     ) {
+      console.log("NOT UPDATING COMPONENT");
       return false;
     } else {
+      console.log("UPDATING COMPONENT");
       return true;
     }
   }
@@ -144,8 +166,12 @@ export default class App extends Component {
           scope: "openid offline_access profile",
           audience: "https://cleaneatingapi.karlmorand.com"
         })
-        .then(authUser => {
+        .then(async authUser => {
           console.log("AUTH USER: ", authUser);
+          let tokenExpiration = moment()
+            .add(authUser.expiresIn, "seconds")
+            .valueOf();
+          await AsyncStorage.setItem("tokenExpiration", tokenExpiration);
           this.setState({ loading: true, loggingIn: false }, () => {
             auth0.auth
               .userInfo({ token: authUser.accessToken })
