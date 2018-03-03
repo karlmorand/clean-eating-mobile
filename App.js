@@ -171,7 +171,8 @@ export default class App extends Component {
           let tokenExpiration = moment()
             .add(authUser.expiresIn, "seconds")
             .valueOf();
-          await AsyncStorage.setItem("tokenExpiration", tokenExpiration);
+          let tokenStr = tokenExpiration.toString();
+          await AsyncStorage.setItem("tokenExpiration", tokenStr);
           this.setState({ loading: true, loggingIn: false }, () => {
             auth0.auth
               .userInfo({ token: authUser.accessToken })
