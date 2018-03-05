@@ -1,0 +1,10 @@
+Styling:
+	- Remove space above picker
+Flows:
+	- Initial setup
+		- Turn on toggle and get prompt, tap allow
+		- Toggle is in "on" state
+		- Notifications automatically scheduled for the default picker time
+		- User picks new time in picker
+		- Existing scheduled notifications are canceled
+		- New notification is set

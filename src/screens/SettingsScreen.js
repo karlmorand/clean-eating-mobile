@@ -7,11 +7,13 @@ import {
   Text,
   Image,
   Linking,
-  ScrollView
+  ScrollView,
+  Switch
 } from "react-native";
 import { Avatar, Card } from "react-native-elements";
 import { containerStyle } from "../config";
 import TeamPicker from "../components/TeamPicker";
+import NotificationSettings from "../components/NotificationSettings";
 import FoodGuideDetail from "../components/FoodGuideDetail";
 import Markdown from "react-native-markdown-renderer";
 
@@ -19,7 +21,8 @@ export default class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showFoodModal: false
+      showFoodModal: false,
+      showNotificationModal: false
     };
   }
   static navigationOptions = {
@@ -35,6 +38,13 @@ export default class SettingsScreen extends React.Component {
     Linking.openURL("mailto:karljmorand@gmail.com?subject=Broccoli").catch(
       err => console.log("Error opening email sheet... ", err)
     );
+  };
+
+  showNotificationModal = () => {
+    this.setState({ showNotificationModal: true });
+  };
+  closeNotificationModal = () => {
+    this.setState({ showNotificationModal: false });
   };
 
   // showEmailSheet = () => {
@@ -80,6 +90,14 @@ export default class SettingsScreen extends React.Component {
         />
       );
     }
+    if (this.state.showNotificationModal) {
+      return (
+        <NotificationSettings
+          visible={this.state.showNotificationModal}
+          closeModal={this.closeNotificationModal}
+        />
+      );
+    }
 
     // <Button title="Go back to home tab" onPress={() => goBack()} />
     return (
@@ -105,6 +123,16 @@ export default class SettingsScreen extends React.Component {
             <Button
               onPress={this.showFoodModal}
               title="Show Detailed Food Guide"
+            />
+          </Card>
+          <Card title="Reminders" titleStyle={styles.levelTitle}>
+            <Text style={styles.textBody}>
+              Broccoli can remind you each night at a certain time to make sure
+              you don't forget to fill out your daily entry.
+            </Text>
+            <Button
+              onPress={this.showNotificationModal}
+              title="Notification Settings"
             />
           </Card>
           <Card title="Questions or feedback?" titleStyle={styles.levelTitle}>
